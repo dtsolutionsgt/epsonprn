@@ -1,0 +1,21 @@
+apply plugin: 'java-library'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+task deleteJar(type: Delete) {
+    delete 'libs/epsonprn.jar'
+}
+
+task createJar(type: Copy) {
+    from('build/intermediates/bundles/release/')
+    into('libs/')
+    include('classes.jar')
+    rename('classes.jar','epsonprn.jar')
+}
+
+createJar.dependsOn(deleteJar,build)
+
+sourceCompatibility = "7"
+targetCompatibility = "7"

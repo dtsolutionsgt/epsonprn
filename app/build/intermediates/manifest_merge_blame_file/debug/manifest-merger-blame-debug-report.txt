@@ -1,0 +1,77 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.dts.epsonprint"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="15"
+8-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml
+9        android:targetSdkVersion="28" />
+9-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml
+10
+11    <uses-permission android:name="android.permission.BLUETOOTH" />
+11-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:5:5-67
+11-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:5:22-65
+12    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+12-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:6:5-73
+12-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:6:22-71
+13    <uses-permission android:name="android.permission.INTERNET" />
+13-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:7:5-66
+13-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:7:22-64
+14    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+14-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:8:5-80
+14-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:8:22-78
+15    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+15-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:9:5-80
+15-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:9:22-78
+16
+17    <application
+17-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:11:5-31:19
+18        android:allowBackup="true"
+18-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:12:9-35
+19        android:appComponentFactory="android.support.v4.app.CoreComponentFactory"
+19-->[com.android.support:support-compat:28.0.0] C:\Users\Jaroslav\.gradle\caches\transforms-2\files-2.1\dd1cf78f22bdd94f550130b281f27c97\support-compat-28.0.0\AndroidManifest.xml:22:18-91
+20        android:debuggable="true"
+21        android:icon="@drawable/epson"
+21-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:13:9-39
+22        android:label="Epson Print"
+22-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:14:9-36
+23        android:theme="@style/AppTheme" >
+23-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:15:9-40
+24        <activity
+24-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:16:9-30:20
+25            android:name="com.dts.epsonprint.MainActivity"
+25-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:17:13-59
+26            android:configChanges="keyboardHidden|orientation|screenSize"
+26-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:18:13-74
+27            android:label="@string/app_title"
+27-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:19:13-46
+28            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
+28-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:21:13-83
+29            android:windowSoftInputMode="stateAlwaysHidden" >
+29-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:20:13-60
+30            <intent-filter>
+30-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:22:13-27:29
+31                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+31-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:23:17-90
+31-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:23:25-87
+32                <action android:name="android.intent.action.MAIN" />
+32-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:24:17-69
+32-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:24:25-66
+33
+34                <category android:name="android.intent.category.LAUNCHER" />
+34-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:26:17-77
+34-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:26:27-74
+35            </intent-filter>
+36
+37            <meta-data
+37-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:28:13-29:57
+38                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+38-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:28:24-86
+39                android:resource="@xml/device_filter" />
+39-->C:\AndrProj2\Epsonprn\app\src\main\AndroidManifest.xml:29:17-54
+40        </activity>
+41    </application>
+42
+43</manifest>
