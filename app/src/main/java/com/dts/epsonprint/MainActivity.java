@@ -64,7 +64,6 @@ public class MainActivity extends Activity implements  ReceiveListener {
         };
         mtimer.postDelayed(mrunner,500);
 
-
     }
 
     //region Handlers
