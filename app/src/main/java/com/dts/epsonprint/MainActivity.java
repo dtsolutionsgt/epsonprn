@@ -38,6 +38,8 @@ public class MainActivity extends Activity implements  ReceiveListener {
     private String mac,fname;
     private int askprint,copies;
 
+    private File ffile;
+
     private static final int REQUEST_PERMISSION = 100;
     private int printstatus=-1;
 
@@ -139,21 +141,48 @@ public class MainActivity extends Activity implements  ReceiveListener {
     //region Main
 
     private void runPrint(){
-        if (runPrintSequence()) {
+        int rslt;
+
+        rslt= printFile();
+
+        if (rslt==1) {
             relPrint.setVisibility(View.INVISIBLE);
+
+            try {
+                ffile.delete();
+            } catch (Exception e) {}
+
             finish();
-        } else {
-            //msgAsk("Imprimir de nuevo");
-        }
+        } else if (rslt==-1) {
+
+            try {
+                ffile.delete();
+            } catch (Exception e) {}
+
+            Handler mtimer = new Handler();
+            Runnable mrunner=new Runnable() {
+                @Override
+                public void run() {
+                    finish();
+                }
+            };
+            mtimer.postDelayed(mrunner,2000);
+
+       }
     }
 
-    private boolean runPrintSequence() {
+    private int printFile() {
+        try {
+            File file1 = new File(fname);
+            ffile = new File(file1.getPath());
+        } catch (Exception e) {
+            ShowMsg.showMsg("No se puede leer archivo de impresión", mContext);return -1;
+        }
 
-        if (!initializeObject()) return false;
-
+        if (!initializeObject()) return 0;
 
         if (!createPrintData()) {
-            finalizeObject();return false;
+            finalizeObject();return 0;
         }
 
         if (!printData()) {
@@ -163,14 +192,14 @@ public class MainActivity extends Activity implements  ReceiveListener {
             } catch (Exception e) {
                 String ss=e.getMessage();
             }
-            return false;
+            return 0;
         }
 
-        return true;
+        return 1;
     }
 
     private boolean createPrintData() {
-        File ffile;
+
         BufferedReader dfile;
         StringBuilder textData = new StringBuilder();
         String method = "",ss;
@@ -178,8 +207,6 @@ public class MainActivity extends Activity implements  ReceiveListener {
         if (mPrinter == null) return false;
 
         try {
-            File file1 = new File(fname);
-            ffile = new File(file1.getPath());
             FileInputStream fIn = new FileInputStream(ffile);
             dfile = new BufferedReader(new InputStreamReader(fIn));
         } catch (Exception e) {
@@ -573,12 +600,14 @@ public class MainActivity extends Activity implements  ReceiveListener {
         dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 relPrint.setVisibility(View.INVISIBLE);
+                try {
+                    ffile.delete();
+                } catch (Exception e) {}
                 finish();
             }
         });
 
         dialog.show();
-
     }
 
     //endregion

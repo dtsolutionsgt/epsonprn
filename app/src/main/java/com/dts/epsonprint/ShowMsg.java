@@ -3,6 +3,8 @@ package com.dts.epsonprint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.view.Gravity;
+import android.widget.Toast;
 
 import com.epson.epos2.Epos2Exception;
 import com.epson.epos2.Epos2CallbackCode;
@@ -47,6 +49,9 @@ public class ShowMsg {
 
     public static void showMsg(String msg, Context context) {
         //show(msg, context);
+        Toast toast= Toast.makeText(context,msg,Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.show();
     }
 
     private static void show(String msg, Context context) {
