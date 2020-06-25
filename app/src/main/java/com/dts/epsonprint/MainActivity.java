@@ -168,6 +168,11 @@ public class MainActivity extends Activity implements  ReceiveListener {
             };
             mtimer.postDelayed(mrunner,2000);
 
+       } else if (rslt==0) {
+            try {
+                ffile.delete();
+            } catch (Exception e) {}
+            finish();
        }
     }
 

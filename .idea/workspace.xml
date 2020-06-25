@@ -21,24 +21,16 @@
     <last-search-timestamp>1563898962928</last-search-timestamp>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="39465a23-31cd-44c9-9dc5-575f4bcdfcdc" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+    <list default="true" id="39465a23-31cd-44c9-9dc5-575f4bcdfcdc" name="Default Changelist" comment="ajustes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/app/app.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/intermediates/incremental/mergeDebugResources/compile-file-map.properties" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/incremental/mergeDebugResources/compile-file-map.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/intermediates/incremental/packageDebug/tmp/debug/dex-renamer-state.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/incremental/packageDebug/tmp/debug/dex-renamer-state.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/intermediates/instant_app_manifest/debug/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/instant_app_manifest/debug/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/intermediates/merged_java_res/debug/out.jar" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/merged_java_res/debug/out.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/intermediates/merged_manifests/debug/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/merged_manifests/debug/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/outputs/apk/debug/app-debug.apk" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/dts/epsonprint/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/dts/epsonprint/MainActivity.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="52009f7b60775519" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="e27093c201aeeb6c" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -240,7 +232,14 @@
       <option name="project" value="LOCAL" />
       <updated>1592930901994</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="ajustes">
+      <created>1593003497634</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1593003497634</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -252,10 +251,10 @@
     <option name="LAST_COMMIT_MESSAGE" value="ajustes" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="314" y="0" key="CommitChangelistDialog2" timestamp="1593003481930">
+    <state x="314" y="0" key="CommitChangelistDialog2" timestamp="1593003673861">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="314" y="0" key="CommitChangelistDialog2/0.0.1366.728@0.0.1366.728" timestamp="1593003481930" />
+    <state x="314" y="0" key="CommitChangelistDialog2/0.0.1366.728@0.0.1366.728" timestamp="1593003673861" />
     <state width="1193" height="105" key="GridCell.Tab.0.bottom" timestamp="1592931161087">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
@@ -288,10 +287,10 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state width="1193" height="105" key="GridCell.Tab.1.right/0.0.1366.728@0.0.1366.728" timestamp="1592931161087" />
-    <state x="251" y="116" key="Vcs.Push.Dialog.v2" timestamp="1592930911045">
+    <state x="251" y="116" key="Vcs.Push.Dialog.v2" timestamp="1593003504907">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="251" y="116" key="Vcs.Push.Dialog.v2/0.0.1366.728@0.0.1366.728" timestamp="1592930911045" />
+    <state x="251" y="116" key="Vcs.Push.Dialog.v2/0.0.1366.728@0.0.1366.728" timestamp="1593003504907" />
     <state width="306" height="113" key="javadoc.popup.new" timestamp="1592927499686">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
