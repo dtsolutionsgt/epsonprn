@@ -229,12 +229,12 @@ public class MainActivity extends Activity implements  ReceiveListener {
             }
 
             for (int i = 0; i <copies; i++) {
-
                 mPrinter.addText(textData.toString());
                 method = "addCut";
                 mPrinter.addCut(Printer.CUT_FEED);
-
             }
+
+            mPrinter.addPulse(Printer.PARAM_DEFAULT, mPrinter.PULSE_300);
 
         } catch (Exception e) {
             showException(e, method, mContext);
@@ -269,9 +269,9 @@ public class MainActivity extends Activity implements  ReceiveListener {
             return false;
         }
 
-          try {
-              mPrinter.sendData(Printer.PARAM_DEFAULT);
-         }   catch (Exception e) {
+        try {
+            mPrinter.sendData(Printer.PARAM_DEFAULT);
+        }   catch (Exception e) {
             showException(e, "sendData", mContext);
             try {
                 mPrinter.disconnect();

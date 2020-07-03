@@ -21,8 +21,28 @@
     <last-search-timestamp>1563898962928</last-search-timestamp>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="39465a23-31cd-44c9-9dc5-575f4bcdfcdc" name="Default Changelist" comment="ajustes">
+    <list default="true" id="39465a23-31cd-44c9-9dc5-575f4bcdfcdc" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/executionHistory/executionHistory.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/executionHistory/executionHistory.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/fileChanges/last-build.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/fileContent/fileContent.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/fileHashes/fileHashes.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/fileHashes/fileHashes.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/fileHashes/resourceHashesCache.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/gc.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/classAnalysis.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/jarAnalysis.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/javaCompile.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/taskHistory.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/incremental/mergeDebugResources/compile-file-map.properties" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/incremental/mergeDebugResources/compile-file-map.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/incremental/packageDebug/tmp/debug/dex-renamer-state.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/incremental/packageDebug/tmp/debug/dex-renamer-state.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/javac/debug/classes/com/dts/epsonprint/MainActivity$4.class" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/javac/debug/classes/com/dts/epsonprint/MainActivity$4.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/javac/debug/classes/com/dts/epsonprint/MainActivity$5.class" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/javac/debug/classes/com/dts/epsonprint/MainActivity$5.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/javac/debug/classes/com/dts/epsonprint/MainActivity$6.class" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/javac/debug/classes/com/dts/epsonprint/MainActivity$6.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/javac/debug/classes/com/dts/epsonprint/MainActivity.class" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/javac/debug/classes/com/dts/epsonprint/MainActivity.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/merged_java_res/debug/out.jar" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/merged_java_res/debug/out.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/dts/epsonprint/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/dts/epsonprint/MainActivity.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -43,6 +63,13 @@
       </state>
     </system>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
   <component name="GenerateSignedApkSettings">
     <option name="KEY_STORE_PATH" value="D:\data\misc\keystoredts\keystoredts2.jks" />
     <option name="KEY_ALIAS" value="dts" />
@@ -51,6 +78,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="MERGE" />
   </component>
   <component name="ProjectId" id="1dgK4Ha2HuckkaGNYcNosFyZ0lM" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -239,7 +267,14 @@
       <option name="project" value="LOCAL" />
       <updated>1593003497634</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="ajustes">
+      <created>1593111860747</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1593111860748</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -248,13 +283,14 @@
     </ignored-roots>
     <MESSAGE value="commit inicial" />
     <MESSAGE value="ajustes" />
-    <option name="LAST_COMMIT_MESSAGE" value="ajustes" />
+    <MESSAGE value="manejo de gaveta" />
+    <option name="LAST_COMMIT_MESSAGE" value="manejo de gaveta" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="314" y="0" key="CommitChangelistDialog2" timestamp="1593003673861">
+    <state x="418" y="0" key="CommitChangelistDialog2" timestamp="1593813665811">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="314" y="0" key="CommitChangelistDialog2/0.0.1366.728@0.0.1366.728" timestamp="1593003673861" />
+    <state x="418" y="0" key="CommitChangelistDialog2/0.0.1366.728@0.0.1366.728" timestamp="1593813665811" />
     <state width="1193" height="105" key="GridCell.Tab.0.bottom" timestamp="1592931161087">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
@@ -287,14 +323,18 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state width="1193" height="105" key="GridCell.Tab.1.right/0.0.1366.728@0.0.1366.728" timestamp="1592931161087" />
-    <state x="251" y="116" key="Vcs.Push.Dialog.v2" timestamp="1593003504907">
+    <state x="251" y="116" key="Vcs.Push.Dialog.v2" timestamp="1593111882201">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="251" y="116" key="Vcs.Push.Dialog.v2/0.0.1366.728@0.0.1366.728" timestamp="1593003504907" />
-    <state width="306" height="113" key="javadoc.popup.new" timestamp="1592927499686">
+    <state x="251" y="116" key="Vcs.Push.Dialog.v2/0.0.1366.728@0.0.1366.728" timestamp="1593111882201" />
+    <state x="453" y="297" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1593520921748">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="306" height="113" key="javadoc.popup.new/0.0.1366.728@0.0.1366.728" timestamp="1592927499686" />
+    <state x="453" y="297" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1366.728@0.0.1366.728" timestamp="1593520921748" />
+    <state width="306" height="113" key="javadoc.popup.new" timestamp="1593809640986">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="306" height="113" key="javadoc.popup.new/0.0.1366.728@0.0.1366.728" timestamp="1593809640986" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
