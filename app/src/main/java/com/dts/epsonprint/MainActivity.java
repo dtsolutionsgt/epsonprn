@@ -1,10 +1,10 @@
 package com.dts.epsonprint;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -18,6 +18,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+
 import com.epson.epos2.Epos2Exception;
 import com.epson.epos2.printer.Printer;
 import com.epson.epos2.printer.PrinterStatusInfo;
@@ -43,18 +44,22 @@ public class MainActivity extends Activity implements  ReceiveListener {
     private Context mContext = null;
     private Printer  mPrinter = null;
 
-    private String mac,fname, fnameQR;
-    private int askprint,copies;
+    private String mac;
+    private String fname;
+    private final String fnameQR;
+    private int copies;
 
     private File ffile;
-    private File ffileQR;
 
     private Bitmap BitmapQR;
 
     private static final int REQUEST_PERMISSION = 100;
-    private int printstatus=-1;
 
     int xQR=20,yQR=10,widhtQR=400,heighQR=400;
+
+    public MainActivity(String fnameQR) {
+        this.fnameQR = fnameQR;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,13 +76,8 @@ public class MainActivity extends Activity implements  ReceiveListener {
         processBundle(bundle);
 
         Handler mtimer = new Handler();
-        Runnable mrunner=new Runnable() {
-            @Override
-            public void run() {
-                //ShowMsg.showMsg(mac+"::"+fname+"::"+askprint,mContext);
-                runPrint();
-            }
-        };
+        //ShowMsg.showMsg(mac+"::"+fname+"::"+askprint,mContext);
+        Runnable mrunner= this::runPrint;
         mtimer.postDelayed(mrunner,500);
 
     }
@@ -101,25 +101,17 @@ public class MainActivity extends Activity implements  ReceiveListener {
             @Override
             public synchronized void run() {
 
-                int a=1;
-
-                if (code==0) printstatus=1;else printstatus=0;
                 if (code!=0) ShowMsg.showResult(code, makeErrorMessage(status), mContext);
 
                 dispPrinterWarnings(status);
 
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        disconnectPrinter();
-                    }
-                }).start();
+                new Thread(() -> disconnectPrinter()).start();
             }
         });
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode != REQUEST_PERMISSION || grantResults.length == 0) {
             return;
         }
@@ -138,7 +130,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
         }
 
         if (!requestPermissions.isEmpty()) {
-            ActivityCompat.requestPermissions(this, requestPermissions.toArray(new String[requestPermissions.size()]), REQUEST_PERMISSION);
+            ActivityCompat.requestPermissions(this, requestPermissions.toArray(new String[0]), REQUEST_PERMISSION);
         }
     }
 
@@ -166,7 +158,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
 
             try {
                 ffile.delete();
-            } catch (Exception e) {}
+            } catch (Exception ignored) {}
 
             finish();
 
@@ -174,21 +166,16 @@ public class MainActivity extends Activity implements  ReceiveListener {
 
             try {
                 ffile.delete();
-            } catch (Exception e) {}
+            } catch (Exception ignored) {}
 
             Handler mtimer = new Handler();
-            Runnable mrunner=new Runnable() {
-                @Override
-                public void run() {
-                    finish();
-                }
-            };
+            Runnable mrunner= this::finish;
             mtimer.postDelayed(mrunner,2000);
 
         } else if (rslt==0) {
             try {
                 ffile.delete();
-            } catch (Exception e) {}
+            } catch (Exception ignored) {}
             finish();
         }
     }
@@ -212,8 +199,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
 
             try {
                 finalizeObject();
-            } catch (Exception e) {
-                String ss=e.getMessage();
+            } catch (Exception ignored) {
             }
             return 0;
         }
@@ -223,6 +209,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
 
     private boolean createPrintData() {
 
+        File ffileQR;
         try {
 
             File file1 = new File(fname);
@@ -240,7 +227,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
         BufferedReader dfileQR;
         StringBuilder textData = new StringBuilder();
         StringBuilder textDataQR = new StringBuilder();
-        String method = "",ss,ss1;
+        String ss,ss1;
 
         if (mPrinter == null) return false;
 
@@ -260,21 +247,19 @@ public class MainActivity extends Activity implements  ReceiveListener {
 
         try {
 
-            method = "addFeedLine";
             mPrinter.addFeedLine(1);
             textData.delete(0, textData.length());
 
             while ((ss = dfile.readLine()) != null) {
-                textData.append(ss+"\n");
+                textData.append(ss).append("\n");
             }
 
             while ((ss1 = dfileQR.readLine()) != null) {
-                textDataQR.append(ss1+"\n");
+                textDataQR.append(ss1).append("\n");
             }
 
             for (int i = 0; i <copies; i++) {
                 mPrinter.addText(textData.toString());
-                method = "addCut";
             }
 
             if (!textDataQR.toString().isEmpty()){
@@ -299,11 +284,9 @@ public class MainActivity extends Activity implements  ReceiveListener {
             mPrinter.addPulse(Printer.PARAM_DEFAULT, mPrinter.PULSE_300);
 
         } catch (Exception e) {
-            showException(e, method, mContext);
+            showException(e);
             return false;
         }
-
-        textData = null;
 
         return true;
     }
@@ -335,7 +318,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
         try {
             mPrinter.sendData(Printer.PARAM_DEFAULT);
         }   catch (Exception e) {
-            showException(e, "sendData", mContext);
+            showException(e);
             try {
                 mPrinter.disconnect();
             }
@@ -364,9 +347,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
             }
 
             try {
-                askprint=b.getInt("askprint");
             } catch (Exception e) {
-                askprint=0;
             }
 
             try {
@@ -376,7 +357,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
             }
 
         } catch (Exception e) {
-            mac="";fname="";askprint=0;
+            mac="";fname="";
         }
 
         if (mac.isEmpty())      mac="BT:00:01:90:85:0D:8C";
@@ -393,7 +374,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
         try {
             mPrinter = new Printer(1,0,mContext); // Model,Language,Context
         }  catch (Exception e) {
-            showException(e, "Printer", mContext);
+            showException(e);
             return false;
         }
 
@@ -421,7 +402,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
         try {
             mPrinter.connect(mac,Printer.PARAM_DEFAULT);
         }  catch (Exception e) {
-            showException(e, "connect", mContext);
+            showException(e);
             return false;
         }
 
@@ -429,10 +410,10 @@ public class MainActivity extends Activity implements  ReceiveListener {
             mPrinter.beginTransaction();
             isBeginTransaction = true;
         }  catch (Exception e) {
-            showException(e, "beginTransaction", mContext);
+            showException(e);
         }
 
-        if (isBeginTransaction == false) {
+        if (!isBeginTransaction) {
             try {
                 mPrinter.disconnect();
             } catch (Epos2Exception e) {
@@ -454,7 +435,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
             runOnUiThread(new Runnable() {
                 @Override
                 public synchronized void run() {
-                    showException(e, "endTransaction", mContext);
+                    showException(e);
                 }
             });
         }
@@ -465,7 +446,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
             runOnUiThread(new Runnable() {
                 @Override
                 public synchronized void run() {
-                    showException(e, "disconnect", mContext);
+                    showException(e);
                 }
             });
         }
@@ -477,7 +458,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
 
     //region Error Handling
 
-    public void showException(Exception e, String method, Context context) {
+    public void showException(Exception e) {
         String msg;
         if (e instanceof Epos2Exception) {
             msg = getEposExceptionText(((Epos2Exception) e).getErrorStatus());
@@ -487,8 +468,9 @@ public class MainActivity extends Activity implements  ReceiveListener {
         msgAsk(msg);
     }
 
+    @SuppressLint("DefaultLocale")
     private String getEposExceptionText(int state) {
-        String return_text = "";
+        String return_text;
         switch (state) {
             case    Epos2Exception.ERR_PARAM:
                 return_text = "Error de configuración de la impresora";//"ERR_PARAM"
@@ -503,7 +485,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
                 return_text = "Error de memoria de la impresora"; //"ERR_MEMORY"
                 break;
             case    Epos2Exception.ERR_ILLEGAL:
-                return_text = "Ilegal comando de impresión";//"ERR_ILLEGAL"
+                return_text = "Illegal commando de impresión";//"ERR_ILLEGAL"
                 break;
             case    Epos2Exception.ERR_PROCESSING:
                 return_text = "Error interno de impresora : ERR_PROCESSING";
@@ -565,7 +547,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
         }
 
         if (!requestPermissions.isEmpty()) {
-            ActivityCompat.requestPermissions(this, requestPermissions.toArray(new String[requestPermissions.size()]), REQUEST_PERMISSION);
+            ActivityCompat.requestPermissions(this, requestPermissions.toArray(new String[0]), REQUEST_PERMISSION);
         }
     }
 
@@ -647,14 +629,8 @@ public class MainActivity extends Activity implements  ReceiveListener {
         if (status.getConnection() == Printer.FALSE) {
             return false;
         }
-        else if (status.getOnline() == Printer.FALSE) {
-            return false;
-        }
-        else {
-            ;//print available
-        }
-
-        return true;
+        else return status.getOnline() != Printer.FALSE;
+        //print available
     }
 
     private void msgAsk(String msg) {
@@ -664,20 +640,14 @@ public class MainActivity extends Activity implements  ReceiveListener {
         dialog.setTitle("Epson print");
         dialog.setMessage(msg+"\n\n¿Imprimír de nuevo?");
 
-        dialog.setPositiveButton("Si", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                runPrint();
-            }
-        });
+        dialog.setPositiveButton("Si", (dialog1, which) -> runPrint());
 
-        dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                relPrint.setVisibility(View.INVISIBLE);
-                try {
-                    ffile.delete();
-                } catch (Exception e) {}
-                finish();
-            }
+        dialog.setNegativeButton("No", (dialog12, which) -> {
+            relPrint.setVisibility(View.INVISIBLE);
+            try {
+                ffile.delete();
+            } catch (Exception ignored) {}
+            finish();
         });
 
         dialog.show();
