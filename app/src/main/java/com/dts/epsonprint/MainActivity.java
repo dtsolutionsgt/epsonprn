@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -21,11 +22,18 @@ import com.epson.epos2.Epos2Exception;
 import com.epson.epos2.printer.Printer;
 import com.epson.epos2.printer.PrinterStatusInfo;
 import com.epson.epos2.printer.ReceiveListener;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 public class MainActivity extends Activity implements  ReceiveListener {
@@ -35,16 +43,22 @@ public class MainActivity extends Activity implements  ReceiveListener {
     private Context mContext = null;
     private Printer  mPrinter = null;
 
-    private String mac,fname;
+    private String mac,fname, fnameQR;
     private int askprint,copies;
 
     private File ffile;
+    private File ffileQR;
+
+    private Bitmap BitmapQR;
 
     private static final int REQUEST_PERMISSION = 100;
     private int printstatus=-1;
 
+    int xQR=20,yQR=10,widhtQR=400,heighQR=400;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -62,7 +76,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
             public void run() {
                 //ShowMsg.showMsg(mac+"::"+fname+"::"+askprint,mContext);
                 runPrint();
-              }
+            }
         };
         mtimer.postDelayed(mrunner,500);
 
@@ -141,11 +155,13 @@ public class MainActivity extends Activity implements  ReceiveListener {
     //region Main
 
     private void runPrint(){
+
         int rslt;
 
         rslt= printFile();
 
         if (rslt==1) {
+
             relPrint.setVisibility(View.INVISIBLE);
 
             try {
@@ -153,6 +169,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
             } catch (Exception e) {}
 
             finish();
+
         } else if (rslt==-1) {
 
             try {
@@ -168,15 +185,16 @@ public class MainActivity extends Activity implements  ReceiveListener {
             };
             mtimer.postDelayed(mrunner,2000);
 
-       } else if (rslt==0) {
+        } else if (rslt==0) {
             try {
                 ffile.delete();
             } catch (Exception e) {}
             finish();
-       }
+        }
     }
 
     private int printFile() {
+
         try {
             File file1 = new File(fname);
             ffile = new File(file1.getPath());
@@ -205,15 +223,37 @@ public class MainActivity extends Activity implements  ReceiveListener {
 
     private boolean createPrintData() {
 
+        try {
+
+            File file1 = new File(fname);
+            ffile = new File(file1.getPath());
+
+            File fileQR = new File(fnameQR);
+            ffileQR = new File(fileQR.getPath());
+
+        } catch (Exception e) {
+            ShowMsg.showMsg("No se puede leer archivo de impresión", mContext);
+            return false    ;
+        }
+
         BufferedReader dfile;
+        BufferedReader dfileQR;
         StringBuilder textData = new StringBuilder();
-        String method = "",ss;
+        StringBuilder textDataQR = new StringBuilder();
+        String method = "",ss,ss1;
 
         if (mPrinter == null) return false;
 
         try {
             FileInputStream fIn = new FileInputStream(ffile);
             dfile = new BufferedReader(new InputStreamReader(fIn));
+        } catch (Exception e) {
+            ShowMsg.showMsg("No se puede leer archivo de impresión", mContext);return false;
+        }
+
+        try {
+            FileInputStream fInQR = new FileInputStream(ffileQR);
+            dfileQR = new BufferedReader(new InputStreamReader(fInQR));
         } catch (Exception e) {
             ShowMsg.showMsg("No se puede leer archivo de impresión", mContext);return false;
         }
@@ -228,11 +268,33 @@ public class MainActivity extends Activity implements  ReceiveListener {
                 textData.append(ss+"\n");
             }
 
+            while ((ss1 = dfileQR.readLine()) != null) {
+                textDataQR.append(ss1+"\n");
+            }
+
             for (int i = 0; i <copies; i++) {
                 mPrinter.addText(textData.toString());
                 method = "addCut";
-                mPrinter.addCut(Printer.CUT_FEED);
             }
+
+            if (!textDataQR.toString().isEmpty()){
+                BitmapQR = createQRImage(textDataQR.toString(),4,4);
+            }
+
+            //
+            if (BitmapQR!=null){
+                mPrinter.addImage(BitmapQR,
+                        xQR,
+                        yQR,
+                        widhtQR,
+                        heighQR,
+                        android.R.color.black,
+                        0,
+                        0,2,
+                        0);
+            }
+
+            mPrinter.addCut(Printer.CUT_FEED);
 
             mPrinter.addPulse(Printer.PARAM_DEFAULT, mPrinter.PULSE_300);
 
@@ -247,6 +309,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
     }
 
     private boolean printData() {
+
         if (mPrinter == null) {
             return false;
         }
@@ -326,8 +389,9 @@ public class MainActivity extends Activity implements  ReceiveListener {
     //region Printer handling
 
     private boolean initializeObject() {
+
         try {
-             mPrinter = new Printer(1,0,mContext); // Model,Language,Context
+            mPrinter = new Printer(1,0,mContext); // Model,Language,Context
         }  catch (Exception e) {
             showException(e, "Printer", mContext);
             return false;
@@ -349,6 +413,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
     }
 
     private boolean connectPrinter() {
+
         boolean isBeginTransaction = false;
 
         if (mPrinter == null) return false;
@@ -389,7 +454,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
             runOnUiThread(new Runnable() {
                 @Override
                 public synchronized void run() {
-                   showException(e, "endTransaction", mContext);
+                    showException(e, "endTransaction", mContext);
                 }
             });
         }
@@ -554,6 +619,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
     }
 
     private void dispPrinterWarnings(PrinterStatusInfo status) {
+
         EditText edtWarnings = (EditText)findViewById(R.id.edtWarnings);
         String warningsMsg = "";
 
@@ -573,6 +639,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
     }
 
     private boolean isPrintable(PrinterStatusInfo status) {
+
         if (status == null) {
             return false;
         }
@@ -591,6 +658,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
     }
 
     private void msgAsk(String msg) {
+
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
 
         dialog.setTitle("Epson print");
@@ -613,6 +681,46 @@ public class MainActivity extends Activity implements  ReceiveListener {
         });
 
         dialog.show();
+    }
+
+    //endregion
+
+    //region QR
+
+    public Bitmap createQRImage(String url, int width, int height){
+
+        try{
+
+            if (url == null || "".equals(url) || url.length() <1){//Judging URL legality
+                return null;
+            }
+
+            Hashtable<EncodeHintType, String> hints = new Hashtable<>();
+            hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
+            //Image data conversion, using matrix conversion
+            BitMatrix bitMatrix = new QRCodeWriter().encode(url, BarcodeFormat.QR_CODE, width, height, hints);
+            int[] pixels = new int[width * height];
+            //Following here is to generate the pictures of the QR code one by one according to the algorithm of the QR code,
+            //The two for loops are the result of the horizontal scan of the picture
+            for (int y = 0; y < height; y++){
+                for (int x = 0; x < width; x++){
+                    if (bitMatrix.get(x, y)){
+                        pixels[y * width + x] = 0xff000000;
+                    }
+                    else{
+                        pixels[y * width + x] = 0xffffffff;
+                    }
+                }
+            }
+            //Generate the format of the QR code image, use ARGB_8888
+            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+            return bitmap;
+
+        }catch (WriterException e){
+            e.printStackTrace();
+            return  null;
+        }
     }
 
     //endregion

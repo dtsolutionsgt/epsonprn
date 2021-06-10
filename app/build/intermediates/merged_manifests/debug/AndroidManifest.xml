@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="15"
-        android:targetSdkVersion="28" />
+        android:targetSdkVersion="30" />
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -20,6 +20,7 @@
         android:debuggable="true"
         android:icon="@drawable/epson"
         android:label="Epson Print"
+        android:testOnly="true"
         android:theme="@style/AppTheme" >
         <activity
             android:name="com.dts.epsonprint.MainActivity"
