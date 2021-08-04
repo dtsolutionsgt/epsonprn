@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -15,6 +16,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Base64;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -29,9 +31,11 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -47,8 +51,9 @@ public class MainActivity extends Activity implements  ReceiveListener {
     private String mac="";
     private String fname="";
     private String fnameQR="";
+    private String QRCodeStr="";
     private int copies=1;
-
+    private int askprint=0;
     private File ffile;
 
     private Bitmap BitmapQR;
@@ -78,8 +83,8 @@ public class MainActivity extends Activity implements  ReceiveListener {
 //        processBundle(bundle);
 
         if (mac.isEmpty())      mac="BT:00:2D:93:C1:F5:A2";
-        if (fname.isEmpty())    fname=Environment.getExternalStorageDirectory()+"/print.txt";
-        if (fnameQR.isEmpty())    fnameQR=Environment.getExternalStorageDirectory()+"/QRCode/6F5E4500-763B-4A0D-AAF7-AEBD367E9F87.jpg";
+        if (fname.isEmpty())    fname=Environment.getExternalStorageDirectory().getAbsolutePath()+"/print.txt";
+        if (fnameQR.isEmpty())  fnameQR=Environment.getExternalStorageDirectory()+"/QRCode/5698E3F4-A25E-422E-A2C4-4F9A3C808119.jpg";
 
         Handler mtimer = new Handler();
 
@@ -244,28 +249,10 @@ public class MainActivity extends Activity implements  ReceiveListener {
         if (mPrinter == null) return false;
 
         try {
-
             FileInputStream fIn = new FileInputStream(ffile);
             dfile = new BufferedReader(new InputStreamReader(fIn));
-
-            boolean ExisteArhcivo =  FileExists(fname);
-
-            if(ExisteArhcivo){
-                FileInputStream fIn2 = new FileInputStream(ffile);
-                dfile = new BufferedReader(new InputStreamReader(fIn2));
-            }else{
-                ShowMsg.showMsg("Archivo no exist " + fname, mContext);return false;
-            }
-
         } catch (Exception e) {
             ShowMsg.showMsg("No se puede leer archivo de impresión " + e.getMessage(), mContext);return false;
-        }
-
-        try {
-            FileInputStream fInQR = new FileInputStream(ffileQR);
-            dfileQR = new BufferedReader(new InputStreamReader(fInQR));
-        } catch (Exception e) {
-            ShowMsg.showMsg("No se puede leer archivo de impresión", mContext);return false;
         }
 
         try {
@@ -277,31 +264,37 @@ public class MainActivity extends Activity implements  ReceiveListener {
                 textData.append(ss).append("\n");
             }
 
-//            while ((ss1 = dfileQR.readLine()) != null) {
-//                textDataQR.append(ss1).append("\n");
-//            }
-
             for (int i = 0; i <copies; i++) {
                 mPrinter.addText(textData.toString());
             }
 
-            if (!textDataQR.toString().isEmpty()){
-                BitmapQR = createQRImage(textDataQR.toString(),4,4);
+            try {
+
+                if (fnameQR != null) {
+                    BitmapQR = BitmapFactory.decodeFile(fnameQR);
+                }
+
+                //
+                if (BitmapQR!=null){
+                    mPrinter.addImage(BitmapQR,
+                            xQR,
+                            yQR,
+                            widhtQR,
+                            heighQR,
+                            android.R.color.black,
+                            0,
+                            0,
+                            2,
+                            0);
+                }
+
+
+            } catch (Exception e) {
+                ShowMsg.showMsg("No se puede leer archivo de impresión", mContext);return false;
             }
 
-            //
-            if (BitmapQR!=null){
-                mPrinter.addImage(BitmapQR,
-                                  xQR,
-                                  yQR,
-                                  widhtQR,
-                                  heighQR,
-                                  android.R.color.black,
-                                  0,
-                                  0,
-                                  2,
-                                  0);
-            }
+            textDataQR.append("http://url.com");
+
 
             mPrinter.addCut(Printer.CUT_FEED);
 
@@ -372,7 +365,15 @@ public class MainActivity extends Activity implements  ReceiveListener {
             }
 
             try {
+                QRCodeStr=b.getString("QRCodeStr");
             } catch (Exception e) {
+                QRCodeStr="";
+            }
+
+            try {
+                askprint=b.getInt("askprint");
+            } catch (Exception e) {
+                askprint=0;
             }
 
             try {
