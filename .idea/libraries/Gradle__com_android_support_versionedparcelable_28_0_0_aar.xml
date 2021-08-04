@@ -3,8 +3,9 @@
     <CLASSES>
       <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/c974b53ff623607867e85f86170dbc65/versionedparcelable-28.0.0/res" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/3233793d0ba361a7c43ba4a693940bda/versionedparcelable-28.0.0/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/3233793d0ba361a7c43ba4a693940bda/versionedparcelable-28.0.0/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/3233793d0ba361a7c43ba4a693940bda/versionedparcelable-28.0.0/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/c25f206f36d7a571d3d19a8ae5791b4b/transformed/versionedparcelable-28.0.0/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/c25f206f36d7a571d3d19a8ae5791b4b/transformed/versionedparcelable-28.0.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/c25f206f36d7a571d3d19a8ae5791b4b/transformed/versionedparcelable-28.0.0/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

@@ -44,10 +44,10 @@ public class MainActivity extends Activity implements  ReceiveListener {
     private Context mContext = null;
     private Printer  mPrinter = null;
 
-    private String mac;
-    private String fname;
-    private final String fnameQR;
-    private int copies;
+    private String mac="";
+    private String fname="";
+    private String fnameQR="";
+    private int copies=1;
 
     private File ffile;
 
@@ -57,9 +57,10 @@ public class MainActivity extends Activity implements  ReceiveListener {
 
     int xQR=20,yQR=10,widhtQR=400,heighQR=400;
 
-    public MainActivity(String fnameQR) {
-        this.fnameQR = fnameQR;
-    }
+
+//    public MainActivity(String fnameQR) {
+//        this.fnameQR = fnameQR;
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,15 +69,20 @@ public class MainActivity extends Activity implements  ReceiveListener {
         setContentView(R.layout.activity_main);
 
         requestRuntimePermission();
+
         mContext = this;
 
         relPrint = (RelativeLayout) findViewById(R.id.relPrint);
 
-        Bundle bundle = getIntent().getExtras();
-        processBundle(bundle);
+//        Bundle bundle = getIntent().getExtras();
+//        processBundle(bundle);
+
+        if (mac.isEmpty())      mac="BT:00:2D:93:C1:F5:A2";
+        if (fname.isEmpty())    fname=Environment.getExternalStorageDirectory()+"/print.txt";
+        if (fnameQR.isEmpty())    fnameQR=Environment.getExternalStorageDirectory()+"/QRCode/6F5E4500-763B-4A0D-AAF7-AEBD367E9F87.jpg";
 
         Handler mtimer = new Handler();
-        //ShowMsg.showMsg(mac+"::"+fname+"::"+askprint,mContext);
+
         Runnable mrunner= this::runPrint;
         mtimer.postDelayed(mrunner,500);
 
@@ -157,7 +163,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
             relPrint.setVisibility(View.INVISIBLE);
 
             try {
-                ffile.delete();
+                //ffile.delete();
             } catch (Exception ignored) {}
 
             finish();
@@ -165,7 +171,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
         } else if (rslt==-1) {
 
             try {
-                ffile.delete();
+                //ffile.delete();
             } catch (Exception ignored) {}
 
             Handler mtimer = new Handler();
@@ -174,7 +180,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
 
         } else if (rslt==0) {
             try {
-                ffile.delete();
+                //ffile.delete();
             } catch (Exception ignored) {}
             finish();
         }
@@ -207,9 +213,15 @@ public class MainActivity extends Activity implements  ReceiveListener {
         return 1;
     }
 
+    public boolean FileExists(String fname) {
+        File file = getBaseContext().getFileStreamPath(fname);
+        return file.exists();
+    }
+
     private boolean createPrintData() {
 
         File ffileQR;
+
         try {
 
             File file1 = new File(fname);
@@ -223,7 +235,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
             return false    ;
         }
 
-        BufferedReader dfile;
+        BufferedReader dfile = null;
         BufferedReader dfileQR;
         StringBuilder textData = new StringBuilder();
         StringBuilder textDataQR = new StringBuilder();
@@ -232,10 +244,21 @@ public class MainActivity extends Activity implements  ReceiveListener {
         if (mPrinter == null) return false;
 
         try {
+
             FileInputStream fIn = new FileInputStream(ffile);
             dfile = new BufferedReader(new InputStreamReader(fIn));
+
+            boolean ExisteArhcivo =  FileExists(fname);
+
+            if(ExisteArhcivo){
+                FileInputStream fIn2 = new FileInputStream(ffile);
+                dfile = new BufferedReader(new InputStreamReader(fIn2));
+            }else{
+                ShowMsg.showMsg("Archivo no exist " + fname, mContext);return false;
+            }
+
         } catch (Exception e) {
-            ShowMsg.showMsg("No se puede leer archivo de impresión", mContext);return false;
+            ShowMsg.showMsg("No se puede leer archivo de impresión " + e.getMessage(), mContext);return false;
         }
 
         try {
@@ -254,9 +277,9 @@ public class MainActivity extends Activity implements  ReceiveListener {
                 textData.append(ss).append("\n");
             }
 
-            while ((ss1 = dfileQR.readLine()) != null) {
-                textDataQR.append(ss1).append("\n");
-            }
+//            while ((ss1 = dfileQR.readLine()) != null) {
+//                textDataQR.append(ss1).append("\n");
+//            }
 
             for (int i = 0; i <copies; i++) {
                 mPrinter.addText(textData.toString());
@@ -269,14 +292,15 @@ public class MainActivity extends Activity implements  ReceiveListener {
             //
             if (BitmapQR!=null){
                 mPrinter.addImage(BitmapQR,
-                        xQR,
-                        yQR,
-                        widhtQR,
-                        heighQR,
-                        android.R.color.black,
-                        0,
-                        0,2,
-                        0);
+                                  xQR,
+                                  yQR,
+                                  widhtQR,
+                                  heighQR,
+                                  android.R.color.black,
+                                  0,
+                                  0,
+                                  2,
+                                  0);
             }
 
             mPrinter.addCut(Printer.CUT_FEED);
@@ -332,6 +356,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
     }
 
     private void processBundle(Bundle b) {
+
         try {
 
             try {
@@ -532,6 +557,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
     //region Aux
 
     private void requestRuntimePermission() {
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)  return;
 
         int permissionStorage = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -548,6 +574,21 @@ public class MainActivity extends Activity implements  ReceiveListener {
 
         if (!requestPermissions.isEmpty()) {
             ActivityCompat.requestPermissions(this, requestPermissions.toArray(new String[0]), REQUEST_PERMISSION);
+        }
+
+        if (Build.VERSION.SDK_INT >= 23) {
+            int REQUEST_CODE_PERMISSION_STORAGE = 100;
+            String[] permissions = {
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+            };
+
+            for (String str : permissions) {
+                if (this.checkSelfPermission(str) != PackageManager.PERMISSION_GRANTED) {
+                    this.requestPermissions(permissions, REQUEST_CODE_PERMISSION_STORAGE);
+                    return;
+                }
+            }
         }
     }
 
