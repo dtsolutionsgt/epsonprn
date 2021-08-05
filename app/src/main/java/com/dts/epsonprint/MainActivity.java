@@ -16,11 +16,13 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
+import com.epson.easyselect.EasySelect;
+import com.epson.easyselect.EasySelectDeviceType;
 import com.epson.epos2.Epos2Exception;
 import com.epson.epos2.printer.Printer;
 import com.epson.epos2.printer.PrinterStatusInfo;
@@ -31,11 +33,9 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -60,7 +60,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
 
     private static final int REQUEST_PERMISSION = 100;
 
-    int xQR=20,yQR=10,widhtQR=400,heighQR=400;
+    int xQR=20,yQR=10,widhtQR=300,heighQR=300;
 
 
 //    public MainActivity(String fnameQR) {
@@ -82,7 +82,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
 //        Bundle bundle = getIntent().getExtras();
 //        processBundle(bundle);
 
-        if (mac.isEmpty())      mac="BT:00:2D:93:C1:F5:A2";
+        if (mac.isEmpty())      mac="BT:DC:0D:30:B8:23:B9";
         if (fname.isEmpty())    fname=Environment.getExternalStorageDirectory().getAbsolutePath()+"/print.txt";
         if (fnameQR.isEmpty())  fnameQR=Environment.getExternalStorageDirectory()+"/QRCode/5698E3F4-A25E-422E-A2C4-4F9A3C808119.jpg";
 
@@ -232,7 +232,8 @@ public class MainActivity extends Activity implements  ReceiveListener {
             File file1 = new File(fname);
             ffile = new File(file1.getPath());
 
-            File fileQR = new File(fnameQR);
+            String fnameQRtxt = Environment.getExternalStorageDirectory().getAbsolutePath()+"/QRCode.txt";
+            File fileQR = new File(fnameQRtxt);
             ffileQR = new File(fileQR.getPath());
 
         } catch (Exception e) {
@@ -255,6 +256,17 @@ public class MainActivity extends Activity implements  ReceiveListener {
             ShowMsg.showMsg("No se puede leer archivo de impresión " + e.getMessage(), mContext);return false;
         }
 
+        //#EJC202108051:25AM: Reads the link from txt file QRCode.txt if exist.
+        try {
+            FileInputStream fIn = new FileInputStream(ffileQR);
+            dfileQR = new BufferedReader(new InputStreamReader(fIn));
+            while ((ss = dfileQR.readLine()) != null) {
+                QRCodeStr=ss;
+            }
+        } catch (Exception e) {
+            //No existe archivo QRCode.txt
+        }
+
         try {
 
             mPrinter.addFeedLine(1);
@@ -270,31 +282,24 @@ public class MainActivity extends Activity implements  ReceiveListener {
 
             try {
 
-                if (fnameQR != null) {
-                    BitmapQR = BitmapFactory.decodeFile(fnameQR);
-                }
+                if (!QRCodeStr.isEmpty()){
+                    try {
 
-                //
-                if (BitmapQR!=null){
-                    mPrinter.addImage(BitmapQR,
-                            xQR,
-                            yQR,
-                            widhtQR,
-                            heighQR,
-                            android.R.color.black,
-                            0,
-                            0,
-                            2,
-                            0);
-                }
+                        makeQrCode();
 
+                        mPrinter.addFeedLine(2);
+
+                    } catch (Exception e) {
+                        Log.println(0,"IMG",e.getMessage());
+                    }
+                }
 
             } catch (Exception e) {
                 ShowMsg.showMsg("No se puede leer archivo de impresión", mContext);return false;
             }
 
-            textDataQR.append("http://url.com");
 
+            mPrinter.addText("\n");
 
             mPrinter.addCut(Printer.CUT_FEED);
 
@@ -307,6 +312,38 @@ public class MainActivity extends Activity implements  ReceiveListener {
 
         return true;
     }
+
+    private boolean makeQrCode() {
+        String method = "";
+
+        if (mPrinter == null) {
+            return false;
+        }
+
+        String qrCode = QRCodeStr;
+        // QR code size
+        final int qrcodeWidth = 5;
+        final int qrcodeHeight = 5;
+
+        try {
+
+            // QR Code
+            method = "addSymbol";
+            mPrinter.addSymbol(qrCode,
+                    Printer.SYMBOL_QRCODE_MODEL_2,
+                    Printer.LEVEL_L,
+                    qrcodeWidth,
+                    qrcodeHeight,
+                    0);
+
+        } catch (Epos2Exception e) {
+            ShowMsg.sshowException(e, method, mContext);
+            return false;
+        }
+
+        return true;
+    }
+
 
     private boolean printData() {
 
@@ -427,7 +464,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
 
         try {
             mPrinter.connect(mac,Printer.PARAM_DEFAULT);
-        }  catch (Exception e) {
+        }  catch (Epos2Exception e) {
             showException(e);
             return false;
         }
