@@ -79,12 +79,12 @@ public class MainActivity extends Activity implements  ReceiveListener {
 
         relPrint = (RelativeLayout) findViewById(R.id.relPrint);
 
-//        Bundle bundle = getIntent().getExtras();
-//        processBundle(bundle);
+        Bundle bundle = getIntent().getExtras();
+        processBundle(bundle);
 
         if (mac.isEmpty())      mac="BT:DC:0D:30:B8:23:B9";
         if (fname.isEmpty())    fname=Environment.getExternalStorageDirectory().getAbsolutePath()+"/print.txt";
-        if (fnameQR.isEmpty())  fnameQR=Environment.getExternalStorageDirectory()+"/QRCode/5698E3F4-A25E-422E-A2C4-4F9A3C808119.jpg";
+        //if (fnameQR.isEmpty())  fnameQR=Environment.getExternalStorageDirectory()+"/QRCode/5698E3F4-A25E-422E-A2C4-4F9A3C808119.jpg";
 
         Handler mtimer = new Handler();
 
@@ -232,9 +232,9 @@ public class MainActivity extends Activity implements  ReceiveListener {
             File file1 = new File(fname);
             ffile = new File(file1.getPath());
 
-            String fnameQRtxt = Environment.getExternalStorageDirectory().getAbsolutePath()+"/QRCode.txt";
-            File fileQR = new File(fnameQRtxt);
-            ffileQR = new File(fileQR.getPath());
+//            String fnameQRtxt = Environment.getExternalStorageDirectory().getAbsolutePath()+"/QRCode.txt";
+//            File fileQR = new File(fnameQRtxt);
+//            ffileQR = new File(fileQR.getPath());
 
         } catch (Exception e) {
             ShowMsg.showMsg("No se puede leer archivo de impresión", mContext);
@@ -257,15 +257,15 @@ public class MainActivity extends Activity implements  ReceiveListener {
         }
 
         //#EJC202108051:25AM: Reads the link from txt file QRCode.txt if exist.
-        try {
-            FileInputStream fIn = new FileInputStream(ffileQR);
-            dfileQR = new BufferedReader(new InputStreamReader(fIn));
-            while ((ss = dfileQR.readLine()) != null) {
-                QRCodeStr=ss;
-            }
-        } catch (Exception e) {
-            //No existe archivo QRCode.txt
-        }
+//        try {
+//            FileInputStream fIn = new FileInputStream(ffileQR);
+//            dfileQR = new BufferedReader(new InputStreamReader(fIn));
+//            while ((ss = dfileQR.readLine()) != null) {
+//                QRCodeStr=ss;
+//            }
+//        } catch (Exception e) {
+//            //No existe archivo QRCode.txt
+//        }
 
         try {
 
@@ -292,12 +292,14 @@ public class MainActivity extends Activity implements  ReceiveListener {
                     } catch (Exception e) {
                         Log.println(0,"IMG",e.getMessage());
                     }
+
+                }else{
+                    ShowMsg.showMsg("El parámetro para QR llegó vacío.", mContext);
                 }
 
             } catch (Exception e) {
                 ShowMsg.showMsg("No se puede leer archivo de impresión", mContext);return false;
             }
-
 
             mPrinter.addText("\n");
 
@@ -406,6 +408,10 @@ public class MainActivity extends Activity implements  ReceiveListener {
             } catch (Exception e) {
                 QRCodeStr="";
             }
+
+            //#EJC20210917
+            EditText edtWarnings = (EditText)findViewById(R.id.edtWarnings);
+            edtWarnings.setText("El QR a imprimir es: " + QRCodeStr);
 
             try {
                 askprint=b.getInt("askprint");

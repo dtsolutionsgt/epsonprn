@@ -37,42 +37,41 @@
 21-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:11:9-39
 22        android:label="Epson Print"
 22-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:12:9-36
-23        android:testOnly="true"
-24        android:theme="@style/AppTheme" >
-24-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:13:9-40
-25        <activity
-25-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:14:9-27:20
-26            android:name="com.dts.epsonprint.MainActivity"
-26-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:15:13-59
-27            android:configChanges="keyboardHidden|orientation|screenSize"
-27-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:16:13-74
-28            android:label="@string/app_title"
-28-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:17:13-46
-29            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
-29-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:19:13-83
-30            android:windowSoftInputMode="stateAlwaysHidden" >
-30-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:18:13-60
-31            <intent-filter>
-31-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:20:13-24:29
-32                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-32-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:21:17-90
-32-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:21:25-87
-33                <action android:name="android.intent.action.MAIN" />
-33-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:22:17-69
-33-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:22:25-66
-34
-35                <category android:name="android.intent.category.LAUNCHER" />
-35-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:23:17-77
-35-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:23:27-74
-36            </intent-filter>
-37
-38            <meta-data
-38-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:25:13-26:57
-39                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
-39-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:25:24-86
-40                android:resource="@xml/device_filter" />
-40-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:26:17-54
-41        </activity>
-42    </application>
-43
-44</manifest>
+23        android:theme="@style/AppTheme" >
+23-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:13:9-40
+24        <activity
+24-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:14:9-27:20
+25            android:name="com.dts.epsonprint.MainActivity"
+25-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:15:13-59
+26            android:configChanges="keyboardHidden|orientation|screenSize"
+26-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:16:13-74
+27            android:label="@string/app_title"
+27-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:17:13-46
+28            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
+28-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:19:13-83
+29            android:windowSoftInputMode="stateAlwaysHidden" >
+29-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:18:13-60
+30            <intent-filter>
+30-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:20:13-24:29
+31                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+31-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:21:17-90
+31-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:21:25-87
+32                <action android:name="android.intent.action.MAIN" />
+32-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:22:17-69
+32-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:22:25-66
+33
+34                <category android:name="android.intent.category.LAUNCHER" />
+34-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:23:17-77
+34-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:23:27-74
+35            </intent-filter>
+36
+37            <meta-data
+37-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:25:13-26:57
+38                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+38-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:25:24-86
+39                android:resource="@xml/device_filter" />
+39-->C:\Users\yejc2\AndroidStudioProjects\epsonprn\app\src\main\AndroidManifest.xml:26:17-54
+40        </activity>
+41    </application>
+42
+43</manifest>
