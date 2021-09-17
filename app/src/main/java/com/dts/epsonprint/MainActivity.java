@@ -409,7 +409,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
                 QRCodeStr="";
             }
 
-            //#EJC20210917
+            //#EJC20210917..
             EditText edtWarnings = (EditText)findViewById(R.id.edtWarnings);
             edtWarnings.setText("El QR a imprimir es: " + QRCodeStr);
 
