@@ -272,7 +272,6 @@ public class MainActivity extends Activity implements  ReceiveListener {
 //        }
 
         try {
-
             mPrinter.addFeedLine(1);
             textData.delete(0, textData.length());
 
@@ -281,28 +280,20 @@ public class MainActivity extends Activity implements  ReceiveListener {
             }
 
             for (int i = 0; i <copies; i++) {
+
                 mPrinter.addText(textData.toString());
+                try {
+                    if (!QRCodeStr.isEmpty()){
+                        try {
+                            makeQrCode();
+                            mPrinter.addFeedLine(2);
+                        } catch (Exception e) {}
+                    } else {}
+                } catch (Exception e) {}
+
+                mPrinter.addText("\n");
+                mPrinter.addCut(Printer.CUT_FEED);
             }
-
-            try {
-                if (!QRCodeStr.isEmpty()){
-                    try {
-                        makeQrCode();
-                        mPrinter.addFeedLine(2);
-                    } catch (Exception e) {
-                        Log.println(0,"IMG",e.getMessage());
-                    }
-                } else {
-                    //ShowMsg.showMsg("El parámetro para QR llegó vacío.", mContext);
-                }
-            } catch (Exception e) {
-                //ShowMsg.showMsg("No se puede leer archivo de impresión", mContext);
-                //return false;
-            }
-
-            mPrinter.addText("\n");
-
-            mPrinter.addCut(Printer.CUT_FEED);
 
             mPrinter.addPulse(Printer.PARAM_DEFAULT, mPrinter.PULSE_300);
 
