@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -293,6 +294,8 @@ public class MainActivity extends Activity implements  ReceiveListener {
 
                 mPrinter.addText("\n");
                 mPrinter.addCut(Printer.CUT_FEED);
+
+                if (copies>1) SystemClock.sleep(2000);
             }
 
             mPrinter.addPulse(Printer.PARAM_DEFAULT, mPrinter.PULSE_300);
