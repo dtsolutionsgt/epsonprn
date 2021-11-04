@@ -149,6 +149,17 @@ public class MainActivity extends Activity implements  ReceiveListener {
         }
     }
 
+    @Override
+    public void onDestroy() {
+
+        try {
+            disconnectPrinter();
+            SystemClock.sleep(500);
+        } catch (Exception e) {}
+
+        super.onDestroy();
+    }
+
     //endregion
 
     //region Events
@@ -162,36 +173,24 @@ public class MainActivity extends Activity implements  ReceiveListener {
     //region Main
 
     private void runPrint(){
-
         int rslt;
 
         rslt= printFile();
 
         if (rslt==1) {
-
             relPrint.setVisibility(View.INVISIBLE);
-
-            try {
-                //ffile.delete();
-            } catch (Exception ignored) {}
-
-            finish();
-
+            endSession();
         } else if (rslt==-1) {
-
-            try {
-                //ffile.delete();
-            } catch (Exception ignored) {}
-
             Handler mtimer = new Handler();
-            Runnable mrunner= this::finish;
-            mtimer.postDelayed(mrunner,2000);
-
+            Runnable mrunner=new Runnable() {
+                @Override
+                public void run() {
+                    endSession();
+                }
+            };
+            mtimer.postDelayed(mrunner,500);
         } else if (rslt==0) {
-            try {
-                //ffile.delete();
-            } catch (Exception ignored) {}
-            finish();
+            endSession();
         }
     }
 
@@ -222,24 +221,12 @@ public class MainActivity extends Activity implements  ReceiveListener {
         return 1;
     }
 
-    public boolean FileExists(String fname) {
-        File file = getBaseContext().getFileStreamPath(fname);
-        return file.exists();
-    }
-
     private boolean createPrintData() {
-
-        File ffileQR;
 
         try {
 
             File file1 = new File(fname);
             ffile = new File(file1.getPath());
-
-//            String fnameQRtxt = Environment.getExternalStorageDirectory().getAbsolutePath()+"/QRCode.txt";
-//            File fileQR = new File(fnameQRtxt);
-//            ffileQR = new File(fileQR.getPath());
-
         } catch (Exception e) {
             ShowMsg.showMsg("No se puede leer archivo de impresión", mContext);
             return false    ;
@@ -260,17 +247,6 @@ public class MainActivity extends Activity implements  ReceiveListener {
             ShowMsg.showMsg("No se puede leer archivo de impresión " + e.getMessage(), mContext);
             return false;
         }
-
-        //#EJC202108051:25AM: Reads the link from txt file QRCode.txt if exist.
-//        try {
-//            FileInputStream fIn = new FileInputStream(ffileQR);
-//            dfileQR = new BufferedReader(new InputStreamReader(fIn));
-//            while ((ss = dfileQR.readLine()) != null) {
-//                QRCodeStr=ss;
-//            }
-//        } catch (Exception e) {
-//            //No existe archivo QRCode.txt
-//        }
 
         try {
             mPrinter.addFeedLine(1);
@@ -295,44 +271,15 @@ public class MainActivity extends Activity implements  ReceiveListener {
                 mPrinter.addText("\n");
                 mPrinter.addCut(Printer.CUT_FEED);
 
-                if (copies>1) SystemClock.sleep(2000);
+                //if (copies>1) SystemClock.sleep(2000);
             }
 
+
             mPrinter.addPulse(Printer.PARAM_DEFAULT, mPrinter.PULSE_300);
+            //mPrinter.clearCommandBuffer();
 
         } catch (Exception e) {
             showException(e);
-            return false;
-        }
-
-        return true;
-    }
-
-    private boolean makeQrCode() {
-        String method = "";
-
-        if (mPrinter == null) {
-            return false;
-        }
-
-        String qrCode = QRCodeStr;
-        // QR code size
-        final int qrcodeWidth = 5;
-        final int qrcodeHeight = 5;
-
-        try {
-
-            // QR Code
-            method = "addSymbol";
-            mPrinter.addSymbol(qrCode,
-                    Printer.SYMBOL_QRCODE_MODEL_2,
-                    Printer.LEVEL_L,
-                    qrcodeWidth,
-                    qrcodeHeight,
-                    0);
-
-        } catch (Epos2Exception e) {
-            ShowMsg.sshowException(e, method, mContext);
             return false;
         }
 
@@ -369,72 +316,15 @@ public class MainActivity extends Activity implements  ReceiveListener {
             showException(e);
             try {
                 mPrinter.disconnect();
-            }
-            catch (Exception ex) {
-                // Do nothing
-            }
+            }  catch (Exception ex) { }
             return false;
         }
 
         return true;
     }
 
-    private void processBundle(Bundle b) {
-        String flog=Environment.getExternalStorageDirectory()+"/logprint.txt";
-        String ss="";
-        String lf="\r\n";
-
-
-        try {
-            //FileOutputStream fos=new FileOutputStream(flog);
-
-            try {
-                mac=b.getString("mac");
-                ss=mac;
-            } catch (Exception e) {
-                mac="BT:00:01:90:85:0D:8C";ss=e.getMessage();
-            }
-            //fos.write(ss.getBytes());fos.write(lf.getBytes());
-
-            try {
-                fname=b.getString("fname");ss=fname;
-            } catch (Exception e) {
-                fname="";ss=e.getMessage();
-            }
-            //fos.write(ss.getBytes());fos.write(lf.getBytes());
-
-            try {
-                QRCodeStr=b.getString("QRCodeStr");ss=QRCodeStr;
-            } catch (Exception e) {
-                QRCodeStr="";ss=e.getMessage();
-            }
-            //fos.write(ss.getBytes());fos.write(lf.getBytes());
-
-            //#EJC20210917..
-            edtWarnings.setText("El QR a imprimir es: " + QRCodeStr);
-
-            try {
-                askprint=b.getInt("askprint");ss=""+askprint;
-            } catch (Exception e) {
-                askprint=0;ss=e.getMessage();
-            }
-            //fos.write(ss.getBytes());fos.write(lf.getBytes());
-
-            try {
-                copies=b.getInt("copies");ss=""+copies;
-            } catch (Exception e) {
-                copies=1;ss=e.getMessage();
-            }
-            //fos.write(ss.getBytes());fos.write(lf.getBytes());
-
-            //fos.close();
-        } catch (Exception e) {
-            mac="";fname="";ss="ERR : "+e.getMessage();
-        }
-
-        if (mac.isEmpty()) mac="BT:00:01:90:85:0D:8C";
-        if (fname.isEmpty()) fname=Environment.getExternalStorageDirectory()+"/print.txt";
-
+    private void endSession() {
+        finish();
     }
 
     //endregion
@@ -603,6 +493,64 @@ public class MainActivity extends Activity implements  ReceiveListener {
 
     //region Aux
 
+    private void processBundle(Bundle b) {
+        String flog=Environment.getExternalStorageDirectory()+"/logprint.txt";
+        String ss="";
+        String lf="\r\n";
+
+
+        try {
+            //FileOutputStream fos=new FileOutputStream(flog);
+
+            try {
+                mac=b.getString("mac");
+                ss=mac;
+            } catch (Exception e) {
+                mac="BT:00:01:90:85:0D:8C";ss=e.getMessage();
+            }
+            //fos.write(ss.getBytes());fos.write(lf.getBytes());
+
+            try {
+                fname=b.getString("fname");ss=fname;
+            } catch (Exception e) {
+                fname="";ss=e.getMessage();
+            }
+            //fos.write(ss.getBytes());fos.write(lf.getBytes());
+
+            try {
+                QRCodeStr=b.getString("QRCodeStr");ss=QRCodeStr;
+            } catch (Exception e) {
+                QRCodeStr="";ss=e.getMessage();
+            }
+            //fos.write(ss.getBytes());fos.write(lf.getBytes());
+
+            //#EJC20210917..
+            edtWarnings.setText("El QR a imprimir es: " + QRCodeStr);
+
+            try {
+                askprint=b.getInt("askprint");ss=""+askprint;
+            } catch (Exception e) {
+                askprint=0;ss=e.getMessage();
+            }
+            //fos.write(ss.getBytes());fos.write(lf.getBytes());
+
+            try {
+                copies=b.getInt("copies");ss=""+copies;
+            } catch (Exception e) {
+                copies=1;ss=e.getMessage();
+            }
+            //fos.write(ss.getBytes());fos.write(lf.getBytes());
+
+            //fos.close();
+        } catch (Exception e) {
+            mac="";fname="";ss="ERR : "+e.getMessage();
+        }
+
+        if (mac.isEmpty()) mac="BT:00:01:90:85:0D:8C";
+        if (fname.isEmpty()) fname=Environment.getExternalStorageDirectory()+"/print.txt";
+
+    }
+
     private void requestRuntimePermission() {
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)  return;
@@ -745,6 +693,42 @@ public class MainActivity extends Activity implements  ReceiveListener {
         Toast toast= Toast.makeText(mContext,msg,Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
+    }
+
+    private boolean makeQrCode() {
+        String method = "";
+
+        if (mPrinter == null) {
+            return false;
+        }
+
+        String qrCode = QRCodeStr;
+        // QR code size
+        final int qrcodeWidth = 5;
+        final int qrcodeHeight = 5;
+
+        try {
+
+            // QR Code
+            method = "addSymbol";
+            mPrinter.addSymbol(qrCode,
+                    Printer.SYMBOL_QRCODE_MODEL_2,
+                    Printer.LEVEL_L,
+                    qrcodeWidth,
+                    qrcodeHeight,
+                    0);
+
+        } catch (Epos2Exception e) {
+            ShowMsg.sshowException(e, method, mContext);
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean FileExists(String fname) {
+        File file = getBaseContext().getFileStreamPath(fname);
+        return file.exists();
     }
 
     //endregion
