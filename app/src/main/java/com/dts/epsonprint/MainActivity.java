@@ -58,6 +58,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
     private int copies=1;
     private int askprint=0;
     private File ffile;
+    private File file1;
 
     private static final int REQUEST_PERMISSION = 100;
 
@@ -179,7 +180,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
     private int printFile() {
 
         try {
-            File file1 = new File(fname);
+            file1 = new File(fname);
             ffile = new File(file1.getPath());
         } catch (Exception e) {
             ShowMsg.showMsg("No se puede leer archivo de impresión", mContext);return -1;
@@ -198,13 +199,18 @@ public class MainActivity extends Activity implements  ReceiveListener {
             return 0;
         }
 
+        try {
+            file1.delete();
+        } catch (Exception e) {
+        }
+
         return 1;
     }
 
     private boolean createPrintData() {
 
         try {
-            File file1 = new File(fname);
+
             ffile = new File(file1.getPath());
         } catch (Exception e) {
             ShowMsg.showMsg("No se puede leer archivo de impresión", mContext);return false;
@@ -405,8 +411,8 @@ public class MainActivity extends Activity implements  ReceiveListener {
     private void restart() {
 
         try {
-            Intent intent = this.getPackageManager().getLaunchIntentForPackage("com.zbs.epsonprnstart");
 
+            Intent intent = this.getPackageManager().getLaunchIntentForPackage("com.zbs.epsonprnstart");
             intent.putExtra("mac","BT:"+mac);
             intent.putExtra("fname", Environment.getExternalStorageDirectory()+"/print.txt");
             intent.putExtra("askprint",1);
