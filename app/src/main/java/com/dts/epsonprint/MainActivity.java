@@ -12,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -59,17 +58,10 @@ public class MainActivity extends Activity implements  ReceiveListener {
     private int askprint=0;
     private File ffile;
 
-    private Bitmap BitmapQR;
-
     private static final int REQUEST_PERMISSION = 100;
 
-    int xQR=20,yQR=10,widhtQR=300,heighQR=300;
-
-//    public MainActivity(String fnameQR) {
-//        this.fnameQR = fnameQR;
-//    }
-
-    int vContador =-1;
+    private Bitmap BitmapQR;
+    private int xQR=20,yQR=10,widhtQR=300,heighQR=300;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,33 +69,23 @@ public class MainActivity extends Activity implements  ReceiveListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        try {
+        requestRuntimePermission();
 
-            mContext = this;
+        mContext = this;
 
-            requestRuntimePermission();
+        relPrint = (RelativeLayout) findViewById(R.id.relPrint);
+        edtWarnings = (EditText)findViewById(R.id.edtWarnings);
 
-            mContext = this;
+        Bundle bundle = getIntent().getExtras();
+        processBundle(bundle);
 
-            relPrint = (RelativeLayout) findViewById(R.id.relPrint);
+        if (mac.isEmpty())      mac="BT:DC:0D:30:B8:23:B9";
+        if (fname.isEmpty())    fname=Environment.getExternalStorageDirectory().getAbsolutePath()+"/print.txt";
 
-            edtWarnings = (EditText)findViewById(R.id.edtWarnings);
+        Handler mtimer = new Handler();
 
-            Bundle bundle = getIntent().getExtras();
-
-            processBundle(bundle);
-
-            if (mac.isEmpty())      mac="BT:DC:0D:30:B8:23:B9";
-
-            if (fname.isEmpty())    fname=Environment.getExternalStorageDirectory().getAbsolutePath()+"/print.txt";
-
-            Handler mtimer = new Handler();
-            Runnable mrunner= this::runPrint;
-            mtimer.postDelayed(mrunner,500);
-
-        } catch (Exception e) {
-             showException(e,vContador);
-        }
+        Runnable mrunner= this::runPrint;
+        mtimer.postDelayed(mrunner,500);
 
     }
 
@@ -111,19 +93,12 @@ public class MainActivity extends Activity implements  ReceiveListener {
 
     @Override
     protected void onActivityResult(int requestCode, final int resultCode, final Intent data) {
-        try {
-            if (data != null && resultCode == RESULT_OK) {
-                //ShowMsg.showMsg("OOOOK", mContext);
-                String target = data.getStringExtra(getString(R.string.title_target));
-                if (target != null) {
-                    EditText mEdtTarget = (EditText)findViewById(R.id.edtTarget);
-                    mEdtTarget.setText(target);
-                }
-            }else{
-                //ShowMsg.showMsg("NOT____OOOK", mContext);
+        if (data != null && resultCode == RESULT_OK) {
+            String target = data.getStringExtra(getString(R.string.title_target));
+            if (target != null) {
+                EditText mEdtTarget = (EditText)findViewById(R.id.edtTarget);
+                mEdtTarget.setText(target);
             }
-        } catch (Exception e) {
-             showException(e,2);
         }
     }
 
@@ -133,17 +108,11 @@ public class MainActivity extends Activity implements  ReceiveListener {
             @Override
             public synchronized void run() {
 
-                try {
+                if (code!=0) ShowMsg.showResult(code, makeErrorMessage(status), mContext);
 
-                    if (code!=0) ShowMsg.showResult(code, makeErrorMessage(status), mContext);
+                dispPrinterWarnings(status);
 
-                    dispPrinterWarnings(status);
-
-                    new Thread(() -> disconnectPrinter()).start();
-
-                } catch (Exception e) {
-                     showException(e,3);
-                }
+                new Thread(() -> disconnectPrinter()).start();
             }
         });
     }
@@ -170,17 +139,6 @@ public class MainActivity extends Activity implements  ReceiveListener {
         if (!requestPermissions.isEmpty()) {
             ActivityCompat.requestPermissions(this, requestPermissions.toArray(new String[0]), REQUEST_PERMISSION);
         }
-    }
-
-    @Override
-    public void onDestroy() {
-
-        try {
-            disconnectPrinter();
-            SystemClock.sleep(500);
-        } catch (Exception e) {}
-
-        super.onDestroy();
     }
 
     //endregion
@@ -211,11 +169,10 @@ public class MainActivity extends Activity implements  ReceiveListener {
                     endSession();
                 }
             };
-            mtimer.postDelayed(mrunner,500);
+            mtimer.postDelayed(mrunner,200);
         } else if (rslt==0) {
             endSession();
         }
-
     }
 
     private int printFile() {
@@ -234,11 +191,9 @@ public class MainActivity extends Activity implements  ReceiveListener {
         }
 
         if (!printData()) {
-
             try {
                 finalizeObject();
-            } catch (Exception ignored) {
-            }
+            } catch (Exception ignored) {}
             return 0;
         }
 
@@ -248,19 +203,14 @@ public class MainActivity extends Activity implements  ReceiveListener {
     private boolean createPrintData() {
 
         try {
-
             File file1 = new File(fname);
             ffile = new File(file1.getPath());
-
         } catch (Exception e) {
-            ShowMsg.showMsg("No se puede leer archivo de impresión", mContext);
-            return false;
+            ShowMsg.showMsg("No se puede leer archivo de impresión", mContext);return false;
         }
 
         BufferedReader dfile = null;
-        BufferedReader dfileQR;
         StringBuilder textData = new StringBuilder();
-        StringBuilder textDataQR = new StringBuilder();
         String ss,ss1;
 
         if (mPrinter == null) return false;
@@ -269,12 +219,10 @@ public class MainActivity extends Activity implements  ReceiveListener {
             FileInputStream fIn = new FileInputStream(ffile);
             dfile = new BufferedReader(new InputStreamReader(fIn));
         } catch (Exception e) {
-            ShowMsg.showMsg("No se puede leer archivo de impresión " + e.getMessage(), mContext);
-            return false;
+            ShowMsg.showMsg("No se puede leer archivo de impresión " + e.getMessage(), mContext); return false;
         }
 
         try {
-
             mPrinter.addFeedLine(1);
             textData.delete(0, textData.length());
 
@@ -282,31 +230,54 @@ public class MainActivity extends Activity implements  ReceiveListener {
                 textData.append(ss).append("\n");
             }
 
-            for (int i = 0; i <copies; i++) {
-                mPrinter.addText(textData.toString());
-                try {
-                    if (!QRCodeStr.isEmpty()){
-                        try {
-                            makeQrCode();
-                            mPrinter.addFeedLine(2);
-                        } catch (Exception e) {}
-                    } else {}
-                } catch (Exception e) {}
+            copies--;
 
-                mPrinter.addText("\n");
-                mPrinter.addFeedLine(2);
-                mPrinter.addCut(Printer.CUT_FEED);
+            mPrinter.addText(textData.toString());
+            try {
+                if (!QRCodeStr.isEmpty()){
+                    try {
+                        makeQrCode();
+                        mPrinter.addFeedLine(2);
+                    } catch (Exception e) {}
+                } else {}
+            } catch (Exception e) {}
 
-                if (copies>1) SystemClock.sleep(1000);
-            }
-
-            QRCodeStr="";
-
-            mPrinter.addPulse(Printer.PARAM_DEFAULT, mPrinter.PULSE_300);
-            //mPrinter.clearCommandBuffer();
+            mPrinter.addText("\n");
+            mPrinter.addCut(Printer.CUT_FEED);
+            if (copies==0) mPrinter.addPulse(Printer.PARAM_DEFAULT, mPrinter.PULSE_300);
 
         } catch (Exception e) {
-            showException(e,4);
+            showException(e);return false;
+        }
+
+        return true;
+    }
+
+    private boolean makeQrCode() {
+        String method = "";
+
+        if (mPrinter == null) {
+            return false;
+        }
+
+        String qrCode = QRCodeStr;
+        // QR code size
+        final int qrcodeWidth = 5;
+        final int qrcodeHeight = 5;
+
+        try {
+
+            // QR Code
+            method = "addSymbol";
+            mPrinter.addSymbol(qrCode,
+                    Printer.SYMBOL_QRCODE_MODEL_2,
+                    Printer.LEVEL_L,
+                    qrcodeWidth,
+                    qrcodeHeight,
+                    0);
+
+        } catch (Epos2Exception e) {
+            ShowMsg.sshowException(e, method, mContext);
             return false;
         }
 
@@ -315,55 +286,128 @@ public class MainActivity extends Activity implements  ReceiveListener {
 
     private boolean printData() {
 
-        try {
+        if (mPrinter == null) {
+            return false;
+        }
 
-            if (mPrinter == null) {
-                return false;
-            }
+        if (!connectPrinter()) {
+            return false;
+        }
 
-            if (!connectPrinter()) {
-                new Thread(() -> disconnectPrinter()).start();
-                return false;
-            }
+        PrinterStatusInfo status = mPrinter.getStatus();
 
-            PrinterStatusInfo status = mPrinter.getStatus();
+        dispPrinterWarnings(status);
 
-            dispPrinterWarnings(status);
-
-            if (!isPrintable(status)) {
-
-                ShowMsg.showMsg(makeErrorMessage(status), mContext);
-
-                try {
-                    mPrinter.disconnect();
-                } catch (Exception ex) {
-                    // Do nothing
-                }
-                return false;
-            }
-
+        if (!isPrintable(status)) {
+            ShowMsg.showMsg(makeErrorMessage(status), mContext);
             try {
-                mPrinter.sendData(Printer.PARAM_DEFAULT);
-            }   catch (Exception e) {
-                showException(e,6);
-                try {
-                    mPrinter.disconnect();
-                }
-                catch (Exception ex) {
-                    // Do nothing
-                }
-                return false;
-            }
+                mPrinter.disconnect();
+            } catch (Exception ex) {}
+            return false;
+        }
 
-        } catch (Exception e) {
-             showException(e,5);
+        try {
+            mPrinter.sendData(Printer.PARAM_DEFAULT);
+        }   catch (Exception e) {
+            showException(e);
+            try {
+                mPrinter.disconnect();
+            } catch (Exception ex) {}
+            return false;
         }
 
         return true;
     }
 
+    private void processBundle(Bundle b) {
+        String flog=Environment.getExternalStorageDirectory()+"/logprint.txt";
+        String ss="";
+        String lf="\r\n";
+
+        try {
+            //FileOutputStream fos=new FileOutputStream(flog);
+
+            try {
+                mac=b.getString("mac");
+                ss=mac;
+            } catch (Exception e) {
+                mac="BT:00:01:90:85:0D:8C";ss=e.getMessage();
+            }
+            //fos.write(ss.getBytes());fos.write(lf.getBytes());
+
+            try {
+                fname=b.getString("fname");ss=fname;
+            } catch (Exception e) {
+                fname="";ss=e.getMessage();
+            }
+            //fos.write(ss.getBytes());fos.write(lf.getBytes());
+
+            try {
+                QRCodeStr=b.getString("QRCodeStr");ss=QRCodeStr;
+            } catch (Exception e) {
+                QRCodeStr="";ss=e.getMessage();
+            }
+            //fos.write(ss.getBytes());fos.write(lf.getBytes());
+
+            //#EJC20210917..
+            edtWarnings.setText("El QR a imprimir es: " + QRCodeStr);
+
+            try {
+                askprint=b.getInt("askprint");ss=""+askprint;
+            } catch (Exception e) {
+                askprint=0;ss=e.getMessage();
+            }
+            //fos.write(ss.getBytes());fos.write(lf.getBytes());
+
+            try {
+                copies=b.getInt("copies");ss=""+copies;
+            } catch (Exception e) {
+                copies=1;ss=e.getMessage();
+            }
+            //fos.write(ss.getBytes());fos.write(lf.getBytes());
+
+            //fos.close();
+        } catch (Exception e) {
+            mac="";fname="";ss="ERR : "+e.getMessage();
+        }
+
+        if (mac.isEmpty()) mac="BT:00:01:90:85:0D:8C";
+        if (fname.isEmpty()) fname=Environment.getExternalStorageDirectory()+"/print.txt";
+
+    }
+
     private void endSession() {
+        if (copies>0) {
+            toast("Imprimiendo . . . ");
+
+            Handler mtimer = new Handler();
+            Runnable mrunner=new Runnable() {
+                @Override
+                public void run() {
+                    restart();
+                }
+            };
+            mtimer.postDelayed(mrunner,5000);
+        }
+
         finish();
+    }
+
+    private void restart() {
+
+        try {
+            Intent intent = this.getPackageManager().getLaunchIntentForPackage("com.zbs.epsonprnstart");
+
+            intent.putExtra("mac","BT:"+mac);
+            intent.putExtra("fname", Environment.getExternalStorageDirectory()+"/print.txt");
+            intent.putExtra("askprint",1);
+            intent.putExtra("copies",copies);
+            intent.putExtra("QRCodeStr",""+QRCodeStr);
+            this.startActivity(intent);
+
+        } catch (Exception e) {
+            toast("Pendiente impresión :\n"+e.getMessage());
+        }
     }
 
     //endregion
@@ -371,15 +415,10 @@ public class MainActivity extends Activity implements  ReceiveListener {
     //region Printer handling
 
     private boolean initializeObject() {
-
-        //ShowMsg.showMsg("c", mContext);
-
         try {
-
             mPrinter = new Printer(1,0,mContext); // Model,Language,Context
-
         }  catch (Exception e) {
-            showException(e,7);
+            showException(e);
             return false;
         }
 
@@ -389,31 +428,27 @@ public class MainActivity extends Activity implements  ReceiveListener {
     }
 
     private void finalizeObject() {
+        if (mPrinter == null) return;
 
-        try {
+        mPrinter.clearCommandBuffer();
 
-            if (mPrinter == null) return;
+        mPrinter.setReceiveEventListener(null);
 
-            mPrinter.clearCommandBuffer();
-            mPrinter.setReceiveEventListener(null);
-            mPrinter = null;
-
-        } catch (Exception e) {
-             showException(e,8);
-        }
-
+        mPrinter = null;
     }
 
     private boolean connectPrinter() {
-
         boolean isBeginTransaction = false;
 
-        if (mPrinter == null) return false;
+        if (mPrinter == null) {
+            return false;
+        }
 
         try {
             mPrinter.connect(mac,Printer.PARAM_DEFAULT);
         }  catch (Epos2Exception e) {
-            showException(e,12);
+            toast("e3err : "+e.getErrorStatus());
+            showException(e);
             return false;
         }
 
@@ -421,7 +456,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
             mPrinter.beginTransaction();
             isBeginTransaction = true;
         }  catch (Exception e) {
-            showException(e,9);
+            showException(e);
         }
 
         if (!isBeginTransaction) {
@@ -436,7 +471,6 @@ public class MainActivity extends Activity implements  ReceiveListener {
     }
 
     private void disconnectPrinter() {
-
         if (mPrinter == null) {
             return;
         }
@@ -447,7 +481,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
             runOnUiThread(new Runnable() {
                 @Override
                 public synchronized void run() {
-                    showException(e,10);
+                    showException(e);
                 }
             });
         }
@@ -458,31 +492,27 @@ public class MainActivity extends Activity implements  ReceiveListener {
             runOnUiThread(new Runnable() {
                 @Override
                 public synchronized void run() {
-                    showException(e,11);
+                    showException(e);
                 }
             });
         }
 
         finalizeObject();
-
     }
 
     //endregion
 
     //region Error Handling
 
-    public void showException(Exception e, int Id) {
-        try {
-            String msg;
-            if (e instanceof Epos2Exception) {
-                msg ="Id " + Id + getEposExceptionText(((Epos2Exception) e).getErrorStatus());
-            }  else {
-                msg = "Id " + Id +  "Err: " + e.toString();
-            }
-            msgAsk(msg);
-        } catch (Exception exception) {
-            exception.printStackTrace();
+    public void showException(Exception e) {
+        String msg;
+        if (e instanceof Epos2Exception) {
+            msg = getEposExceptionText(((Epos2Exception) e).getErrorStatus());
+        }  else {
+            msg = e.toString();
         }
+        //msgAsk(msg);
+        toast(msg);
     }
 
     @SuppressLint("DefaultLocale")
@@ -547,64 +577,6 @@ public class MainActivity extends Activity implements  ReceiveListener {
     //endregion
 
     //region Aux
-
-    private void processBundle(Bundle b) {
-        String flog=Environment.getExternalStorageDirectory()+"/logprint.txt";
-        String ss="";
-        String lf="\r\n";
-
-
-        try {
-            //FileOutputStream fos=new FileOutputStream(flog);
-
-            try {
-                mac=b.getString("mac");
-                ss=mac;
-            } catch (Exception e) {
-                mac="BT:00:01:90:85:0D:8C";ss=e.getMessage();
-            }
-            //fos.write(ss.getBytes());fos.write(lf.getBytes());
-
-            try {
-                fname=b.getString("fname");ss=fname;
-            } catch (Exception e) {
-                fname="";ss=e.getMessage();
-            }
-            //fos.write(ss.getBytes());fos.write(lf.getBytes());
-
-            try {
-                QRCodeStr=b.getString("QRCodeStr");ss=QRCodeStr;
-            } catch (Exception e) {
-                QRCodeStr="";ss=e.getMessage();
-            }
-            //fos.write(ss.getBytes());fos.write(lf.getBytes());
-
-            //#EJC20210917..
-            edtWarnings.setText("El QR a imprimir es: " + QRCodeStr);
-
-            try {
-                askprint=b.getInt("askprint");ss=""+askprint;
-            } catch (Exception e) {
-                askprint=0;ss=e.getMessage();
-            }
-            //fos.write(ss.getBytes());fos.write(lf.getBytes());
-
-            try {
-                copies=b.getInt("copies");ss=""+copies;
-            } catch (Exception e) {
-                copies=1;ss=e.getMessage();
-            }
-            //fos.write(ss.getBytes());fos.write(lf.getBytes());
-
-            //fos.close();
-        } catch (Exception e) {
-            mac="";fname="";ss="ERR : "+e.getMessage();
-        }
-
-        if (mac.isEmpty()) mac="BT:00:01:90:85:0D:8C";
-        if (fname.isEmpty()) fname=Environment.getExternalStorageDirectory()+"/print.txt";
-
-    }
 
     private void requestRuntimePermission() {
 
@@ -724,66 +696,10 @@ public class MainActivity extends Activity implements  ReceiveListener {
         //print available
     }
 
-    private void msgAsk(String msg) {
-
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-
-        dialog.setTitle("Epson print");
-        dialog.setMessage(msg+"\n\n¿Imprimír de nuevo?");
-
-        dialog.setPositiveButton("Si", (dialog1, which) -> runPrint());
-
-        dialog.setNegativeButton("No", (dialog12, which) -> {
-            relPrint.setVisibility(View.INVISIBLE);
-            try {
-                ffile.delete();
-            } catch (Exception ignored) {}
-            finish();
-        });
-
-        dialog.show();
-    }
-
     public void toast(String msg) {
         Toast toast= Toast.makeText(mContext,msg,Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
-    }
-
-    private boolean makeQrCode() {
-        String method = "";
-
-        if (mPrinter == null) {
-            return false;
-        }
-
-        String qrCode = QRCodeStr;
-        // QR code size
-        final int qrcodeWidth = 5;
-        final int qrcodeHeight = 5;
-
-        try {
-
-            // QR Code
-            method = "addSymbol";
-            mPrinter.addSymbol(qrCode,
-                    Printer.SYMBOL_QRCODE_MODEL_2,
-                    Printer.LEVEL_L,
-                    qrcodeWidth,
-                    qrcodeHeight,
-                    0);
-
-        } catch (Epos2Exception e) {
-            ShowMsg.sshowException(e, method, mContext);
-            return false;
-        }
-
-        return true;
-    }
-
-    public boolean FileExists(String fname) {
-        File file = getBaseContext().getFileStreamPath(fname);
-        return file.exists();
     }
 
     //endregion
@@ -821,7 +737,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
             return bitmap;
 
         }catch (WriterException e){
-             showException(e,13);
+            e.printStackTrace();
             return  null;
         }
     }
