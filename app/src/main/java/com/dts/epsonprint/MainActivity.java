@@ -236,6 +236,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
         try {
 
             mPrinter.addFeedLine(1);
+
             textData.delete(0, textData.length());
 
             while ((ss = dfile.readLine()) != null) {
@@ -418,7 +419,15 @@ public class MainActivity extends Activity implements  ReceiveListener {
             mtimer.postDelayed(mrunner,5000);
         }
 
-        finish();
+        Handler tmtimer = new Handler();
+        Runnable tmrunner=new Runnable() {
+            @Override
+            public void run() {
+                finish();
+            }
+        };
+        tmtimer.postDelayed(tmrunner,15000);
+
     }
 
     private void restart() {
