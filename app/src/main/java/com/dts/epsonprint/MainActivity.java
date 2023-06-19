@@ -260,6 +260,8 @@ public class MainActivity extends Activity implements  ReceiveListener {
 
         } catch (Exception e) {
             ShowMsg.showMsg("No se puede leer archivo de impresión", mContext);
+
+
             return false;
         }
 
@@ -276,6 +278,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
             dfile = new BufferedReader(new InputStreamReader(fIn));
         } catch (Exception e) {
             ShowMsg.showMsg("No se puede leer archivo de impresión " + e.getMessage(), mContext);
+                edtWarnings.setText("No se puede leer archivo de impresión ");
             return false;
         }
 
@@ -376,14 +379,21 @@ public class MainActivity extends Activity implements  ReceiveListener {
                     // Do nothing
                 }
                 return false;
+            }else {
+                edtWarnings.setText("ERROR_202319061502: Reinicie la impresora. (" + status + ")" );
             }
 
             try {
+
                 mPrinter.sendData(Printer.PARAM_DEFAULT);
-            }   catch (Exception e) {
+
+            } catch (Exception e) {
                 showException(e,6);
+                edtWarnings.setText(e.getMessage());
+
                 try {
-                    mPrinter.disconnect();
+                    disconnectPrinter();
+                    //mPrinter.disconnect();
                 }
                 catch (Exception ex) {
                     // Do nothing
@@ -411,12 +421,14 @@ public class MainActivity extends Activity implements  ReceiveListener {
                 mac=b.getString("mac");
                 ss=mac;
             } catch (Exception e) {
+                edtWarnings.setText("ERROR_20230619B:WE LOST THE MAC");
                 mac="BT:00:01:90:85:0D:8C";ss=e.getMessage();
             }
 
             try {
                 fname=b.getString("fname");ss=fname;
             } catch (Exception e) {
+                edtWarnings.setText("ERROR_20230619A:NAME FILE BECOMES EMPTY");
                 fname="";ss=e.getMessage();
             }
 
@@ -448,8 +460,19 @@ public class MainActivity extends Activity implements  ReceiveListener {
         }
 
         try {
-            if (mac.isEmpty()) mac="BT:00:01:90:85:0D:8C";
+
+            if (mac.isEmpty()){
+                edtWarnings.setText("ERROR_20230619:MAC IS EMPTY");
+                ShowMsg.showMsg("ERROR_20230619:MAC IS EMPTY", mContext);
+
+                mac="BT:00:01:90:85:0D:8C";
+            }
             if (fname.isEmpty()) fname=Environment.getExternalStorageDirectory()+"/print.txt";
+
+            if (QRCodeStr.isEmpty()){
+                edtWarnings.setText("mac " + mac+ " , copies "+copies+" file "+fname);
+            }
+
         } catch (Exception e) {
             showException(e,6);
         }
@@ -503,6 +526,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
         try {
             mPrinter.connect(mac,Printer.PARAM_DEFAULT);
         }  catch (Epos2Exception e) {
+            edtWarnings.setText("ERROR_202306191456: " + e.getMessage());
             showException(e,12);
             return false;
         }
@@ -511,6 +535,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
             mPrinter.beginTransaction();
             isBeginTransaction = true;
         }  catch (Exception e) {
+            edtWarnings.setText("ERROR_202306191456: " + e.getMessage());
             showException(e,9);
         }
 
@@ -518,6 +543,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
             try {
                 mPrinter.disconnect();
             } catch (Epos2Exception e) {
+                edtWarnings.setText("ERROR_202306191456: " + e.getMessage());
                 return false;
             }
         }
@@ -759,12 +785,9 @@ public class MainActivity extends Activity implements  ReceiveListener {
     private void msgAsk(String msg) {
 
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-
         dialog.setTitle("Epson print");
         dialog.setMessage(msg+"\n\n¿Imprimír de nuevo?");
-
         dialog.setPositiveButton("Si", (dialog1, which) -> runPrint());
-
         dialog.setNegativeButton("No", (dialog12, which) -> {
             relPrint.setVisibility(View.INVISIBLE);
             try {
@@ -772,7 +795,6 @@ public class MainActivity extends Activity implements  ReceiveListener {
             } catch (Exception ignored) {}
             finish();
         });
-
         dialog.show();
     }
 
