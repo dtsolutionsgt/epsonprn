@@ -120,11 +120,8 @@ public class MainActivity extends Activity implements  ReceiveListener {
         runOnUiThread(new Runnable() {
             @Override
             public synchronized void run() {
-
                 if (code!=0) ShowMsg.showResult(code, makeErrorMessage(status), mContext);
-
                 dispPrinterWarnings(status);
-
                 new Thread(() -> disconnectPrinter()).start();
             }
         });
