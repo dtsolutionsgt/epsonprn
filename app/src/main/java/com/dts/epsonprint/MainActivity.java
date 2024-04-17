@@ -16,7 +16,6 @@ import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
@@ -36,8 +35,6 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -57,7 +54,13 @@ public class MainActivity extends Activity implements  ReceiveListener {
     private String QRCodeStr="";
     private int copies=1;
     private int askprint=0;
-    private File ffile;
+    private File ffile,flog;
+
+    private String logname=Environment.getExternalStorageDirectory()+"/printlog.txt";
+    private String ss="";
+    private String lf="\r\n";
+
+    private boolean writelog=true;
 
     private Bitmap BitmapQR;
 
@@ -80,26 +83,27 @@ public class MainActivity extends Activity implements  ReceiveListener {
         try {
 
             mContext = this;
-
             requestRuntimePermission();
-
             mContext = this;
 
             relPrint = (RelativeLayout) findViewById(R.id.relPrint);
-
             edtWarnings = (EditText)findViewById(R.id.edtWarnings);
 
             Bundle bundle = getIntent().getExtras();
 
             processBundle(bundle);
 
-            if (mac.isEmpty())      mac="BT:DC:0D:30:B8:23:B9";
+            if (fname.isEmpty()) fname=Environment.getExternalStorageDirectory().getAbsolutePath()+"/print.txt";
 
-            if (fname.isEmpty())    fname=Environment.getExternalStorageDirectory().getAbsolutePath()+"/print.txt";
+            System.setProperty("line.separator","\r\n");
 
-            Handler mtimer = new Handler();
-            Runnable mrunner= this::runPrint;
-            mtimer.postDelayed(mrunner,500);
+            if (!mac.isEmpty()) {
+                Handler mtimer = new Handler();
+                Runnable mrunner= this::runPrint;
+                mtimer.postDelayed(mrunner,500);
+            } else {
+                msgExit("No se puede imprimir factura.\nPor favor realize reimpresión.");
+            }
 
         } catch (Exception e) {
              showException(e,vContador);
@@ -176,8 +180,10 @@ public class MainActivity extends Activity implements  ReceiveListener {
 
     //region Events
 
-    public void doPrint(View view) {
-
+    public void doClose(View view) {
+        try {
+            finish();
+        } catch (Exception e) { }
     }
 
     //endregion
@@ -191,15 +197,8 @@ public class MainActivity extends Activity implements  ReceiveListener {
         rslt= printFile();
 
         if (rslt==1) {
-
             relPrint.setVisibility(View.INVISIBLE);
-
-            try {
-
-            } catch (Exception ignored) {}
-
             finish();
-
         } else if (rslt==-1) {
 
             try {
@@ -211,8 +210,6 @@ public class MainActivity extends Activity implements  ReceiveListener {
             mtimer.postDelayed(mrunner,2000);
 
         } else if (rslt==0) {
-            try {
-            } catch (Exception ignored) {}
             finish();
         }
 
@@ -234,11 +231,9 @@ public class MainActivity extends Activity implements  ReceiveListener {
         }
 
         if (!printData()) {
-
             try {
                 finalizeObject();
-            } catch (Exception ignored) {
-            }
+            } catch (Exception ignored) { }
             return 0;
         }
 
@@ -251,16 +246,14 @@ public class MainActivity extends Activity implements  ReceiveListener {
     }
 
     private boolean createPrintData() {
-
         File ffileQR;
 
         try {
-
             File file1 = new File(fname);
             ffile = new File(file1.getPath());
-
         } catch (Exception e) {
-            ShowMsg.showMsg("No se puede leer archivo de impresión", mContext);
+            //ShowMsg.showMsg("No se puede leer archivo de impresión", mContext);
+            msgExit("No se puede leer archivo de impresión.\nPor favor realize reimpresión.");
             return false;
         }
 
@@ -276,7 +269,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
             FileInputStream fIn = new FileInputStream(ffile);
             dfile = new BufferedReader(new InputStreamReader(fIn));
         } catch (Exception e) {
-            ShowMsg.showMsg("No se puede leer archivo de impresión " + e.getMessage(), mContext);
+            msgExit("No se puede leer archivo de impresión \n" + e.getMessage());
             return false;
         }
 
@@ -353,7 +346,6 @@ public class MainActivity extends Activity implements  ReceiveListener {
     private boolean printData() {
 
         try {
-
             if (mPrinter == null) {
                 return false;
             }
@@ -373,9 +365,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
 
                 try {
                     mPrinter.disconnect();
-                } catch (Exception ex) {
-                    // Do nothing
-                }
+                } catch (Exception ex) { }
                 return false;
             }
 
@@ -386,9 +376,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
                 try {
                     mPrinter.disconnect();
                 }
-                catch (Exception ex) {
-                    // Do nothing
-                }
+                catch (Exception ex) { }
                 return false;
             }
 
@@ -400,11 +388,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
     }
 
     private void processBundle(Bundle b) {
-
-        String flog=Environment.getExternalStorageDirectory()+"/logprint.txt";
         String ss="";
-        String lf="\r\n";
-
 
         try {
 
@@ -412,7 +396,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
                 mac=b.getString("mac");
                 ss=mac;
             } catch (Exception e) {
-                mac="BT:00:01:90:85:0D:8C";ss=e.getMessage();
+                mac="";ss=e.getMessage();
             }
 
             try {
@@ -427,10 +411,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
                 QRCodeStr="";ss=e.getMessage();
             }
 
-            //#EJC20210917..
-            if (!QRCodeStr.isEmpty()){
-                edtWarnings.setText("El QR a imprimir es: " + QRCodeStr);
-            }
+           if (!QRCodeStr.isEmpty()) edtWarnings.setText("El QR a imprimir es: " + QRCodeStr);
 
             try {
                 askprint=b.getInt("askprint");ss=""+askprint;
@@ -449,7 +430,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
         }
 
         try {
-            if (mac.isEmpty()) mac="BT:00:01:90:85:0D:8C";
+            if (mac.isEmpty()) mac="";
             if (fname.isEmpty()) fname=Environment.getExternalStorageDirectory()+"/print.txt";
         } catch (Exception e) {
             showException(e,6);
@@ -462,16 +443,10 @@ public class MainActivity extends Activity implements  ReceiveListener {
     //region Printer handling
 
     private boolean initializeObject() {
-
-        //ShowMsg.showMsg("c", mContext);
-
         try {
-
             mPrinter = new Printer(1,0,mContext); // Model,Language,Context
-
         }  catch (Exception e) {
-            showException(e,7);
-            return false;
+            showException(e,7);return false;
         }
 
         mPrinter.setReceiveEventListener(this);
@@ -480,23 +455,18 @@ public class MainActivity extends Activity implements  ReceiveListener {
     }
 
     private void finalizeObject() {
-
         try {
-
             if (mPrinter == null) return;
 
             mPrinter.clearCommandBuffer();
             mPrinter.setReceiveEventListener(null);
             mPrinter = null;
-
         } catch (Exception e) {
              showException(e,8);
         }
-
     }
 
     private boolean connectPrinter() {
-
         boolean isBeginTransaction = false;
 
         if (mPrinter == null) return false;
@@ -527,10 +497,7 @@ public class MainActivity extends Activity implements  ReceiveListener {
     }
 
     private void disconnectPrinter() {
-
-        if (mPrinter == null) {
-            return;
-        }
+        if (mPrinter == null) return;
 
         try {
             mPrinter.endTransaction();
@@ -745,15 +712,11 @@ public class MainActivity extends Activity implements  ReceiveListener {
     }
 
     private boolean isPrintable(PrinterStatusInfo status) {
-
-        if (status == null) {
-            return false;
-        }
+        if (status == null) return false;
 
         if (status.getConnection() == Printer.FALSE) {
             return false;
-        }
-        else return status.getOnline() != Printer.FALSE;
+        }   else return status.getOnline() != Printer.FALSE;
         //print available
     }
 
@@ -773,6 +736,18 @@ public class MainActivity extends Activity implements  ReceiveListener {
             } catch (Exception ignored) {}
             finish();
         });
+
+        dialog.show();
+    }
+
+    private void msgExit(String msg) {
+
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+
+        dialog.setTitle("Epson print");
+        dialog.setMessage(msg);
+
+        dialog.setPositiveButton("OK", (dialog1, which) -> finish());
 
         dialog.show();
     }
@@ -821,6 +796,19 @@ public class MainActivity extends Activity implements  ReceiveListener {
              showException(e,13);
             return  null;
         }
+    }
+
+    //endregion
+
+    //region Activity Events
+
+    @Override
+    protected void onDestroy() {
+        try {
+            Runtime.getRuntime().gc();
+        } catch (Exception e) { }
+
+        super.onDestroy();
     }
 
     //endregion

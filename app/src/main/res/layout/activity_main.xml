@@ -39,9 +39,9 @@
             android:layout_marginEnd="320dp"
             android:layout_marginRight="10dp"
             android:layout_marginBottom="0dp"
-            android:onClick="doPrint"
-            android:text="prn"
-            android:visibility="invisible" />
+            android:onClick="doClose"
+            android:text="cerrar"
+            android:visibility="visible" />
 
         <EditText
             android:id="@+id/edtWarnings"
@@ -58,8 +58,8 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="128dp"
-            android:layout_height="128dp"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
             android:layout_below="@+id/imageView2"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
@@ -88,9 +88,10 @@
             style="@android:style/Widget.Holo.ProgressBar.Large"
             android:layout_width="88dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentRight="false"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="71dp"
             android:layout_marginEnd="95dp"
             android:layout_marginRight="95dp" />
@@ -105,7 +106,7 @@
             android:layout_marginStart="11dp"
             android:layout_marginLeft="11dp"
             android:layout_marginTop="5dp"
-            android:text="v 20211102"
+            android:text="version 20240417"
             android:textColor="#202020"
             android:textSize="12sp" />
 
